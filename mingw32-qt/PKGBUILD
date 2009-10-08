@@ -1,0 +1,74 @@
+# Contributor: Vladimír Vondruš <mosra@centrum.cz>
+pkgname=mingw32-qt
+pkgver=4.5.2
+pkgrel=1
+pkgdesc="A cross-platform application and UI framework (mingw32 version)"
+arch=('i686' 'x86_64')
+url="http://qt.nokia.com/"
+license=('LGPL')
+groups=()
+depends=('mingw32-runtime')
+makedepends=('p7zip' 'unzip')
+
+_exe='qt-sdk-win-opensource-2009.03.1.exe'
+_zip="qt-win-opensource-src-${pkgver}"
+
+source=("http://get.qt.nokia.com/qtsdk/${_exe}"
+        "http://get.qt.nokia.com/qt/source/${_zip}.zip"
+        "i486-mingw32-qmake"
+        "qmake.conf")
+noextract=("${_exe}"
+           "${_zip}.zip")
+md5sums=('324413aab9deb49b561911676b6fae54'
+         '05d3d3448218acc72bd7a5bbfae9312a'
+         '5686d930bfc73c5d996389b520f27a15'
+         'ed087b8b93a75d21e23b1c0bcbf15603')
+
+# http://www.gentoo-wiki.info/HOWTO_MinGW_and_Qt4#Installing_crossdev_toolchain
+
+build() {
+    msg "Extracting data from windows installer..."
+    cd ${srcdir}
+    # Overwriting some duplicate files, so Yes on all
+    7z x -y ${_exe} > /dev/null
+
+    # In the installer are missing some header files (they are automagically
+    # created during installation), so we must take includes from ZIP sources.
+    msg "Extracting data from zip source..."
+    unzip ${_zip}.zip > /dev/null
+
+    rootdir=${pkgdir}/usr/i486-mingw32/
+
+    msg "Copying DLLs..."
+    mkdir -p ${rootdir}/bin
+    rm -f \$OUTDIR/qt/qt/bin/*d4.dll
+    cp \$OUTDIR/qt/qt/bin/*.dll ${rootdir}/bin/ || return 1
+
+    msg "Copying plugins..."
+    cp -r \$OUTDIR/qt/qt/plugins ${rootdir}/bin/ || return 1
+
+    msg "Copying static libs..."
+    mkdir -p ${rootdir}/lib
+    rm -f \$OUTDIR/qt/qt/bin/*d4.a
+    cp \$OUTDIR/qt/qt/lib/*.a ${rootdir}/lib/ || return 1
+
+    msg "Copying mkspecs..."
+    cp -r \$OUTDIR/qt/qt/mkspecs ${rootdir} || return 1
+
+    msg "Copying includes..."
+    mkdir -p ${rootdir}/include
+    cp -r ${_zip}/include ${rootdir} || return 1
+    # qconfig.h is missing in sources, so copy from SDK
+    cp \$OUTDIR/qt/qt/include/QtCore/qconfig.h ${rootdir}/include/QtCore || return 1
+    # From sources copy only *.h files (needed by includes)
+    cd \$OUTDIR/qt/qt
+    cp --parents -r $(find src | grep -e ".h$") ${rootdir} || return 1
+
+    # Stolen from original package
+    install -D -m644 ${srcdir}/qmake.conf ${pkgdir}/usr/share/qt/mkspecs/win32-x-g++/qmake.conf
+    install -D -m755 ${srcdir}/i486-mingw32-qmake ${pkgdir}/usr/bin/i486-mingw32-qmake
+
+    chmod 755 $(find ${pkgdir} -type d) || return 1
+    chmod 644 $(find ${pkgdir} -type f) || return 1
+    chmod +x ${rootdir}/bin/* ${rootdir}/lib/* || return 1
+}

@@ -1,0 +1,26 @@
+#!/bin/bash
+# Contributor: Vladimír Vondruš <mosra@centrum.cz>
+pkgname=gp2xsdk-binutils
+pkgver=2.16.1
+pkgrel=1
+pkgdesc="Official GamePark SDK for GP2X development - binutils"
+arch=('i686' 'x86_64')
+url="http://wiki.gp2x.org"
+license=('GPL')
+depends=()
+makedepends=()
+optdepends=()
+
+source=("ftp://ftp.gnu.org/gnu/binutils/binutils-$pkgver.tar.bz2")
+md5sums=('6a9d529efb285071dad10e1f3d2b2967')
+
+build() {
+    _target='arm-gp2x-linux'
+
+    cd "$srcdir/binutils-$pkgver"
+    ./configure --prefix=/usr --includedir=/usr/$_target/include --target=$_target --program-prefix=$_target- --with-cpu=arm9tdmi --disable-nls || return 1
+    make || return 1
+    make DESTDIR=$pkgdir/ install || return 1
+
+    rm -rf $pkgdir/usr/info $pkgdir/usr/man $pkgdir/usr/lib
+}

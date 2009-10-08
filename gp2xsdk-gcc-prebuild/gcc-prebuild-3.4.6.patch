@@ -1,0 +1,16 @@
+diff -urN gcc-3.4.6.orig/gcc/config/arm/t-linux gcc-prebuild-3.4.6/gcc/config/arm/t-linux
+--- gcc-3.4.6.orig/gcc/config/arm/t-linux	2003-09-21 06:09:07.000000000 +0900
++++ gcc-prebuild-3.4.6/gcc/config/arm/t-linux	2006-04-04 11:59:30.000000000 +0900
+@@ -1,6 +1,6 @@
+ # Just for these, we omit the frame pointer since it makes such a big
+ # difference.  It is then pointless adding debugging.
+-TARGET_LIBGCC2_CFLAGS = -fomit-frame-pointer -fPIC
++TARGET_LIBGCC2_CFLAGS = -fomit-frame-pointer -fPIC -Dinhibit_libc -D__gthr_posix_h
+ LIBGCC2_DEBUG_CFLAGS = -g0
+ 
+ LIB1ASMSRC = arm/lib1funcs.asm
+@@ -18,3 +18,4 @@
+ 
+ # LIBGCC = stmp-multilib
+ # INSTALL_LIBGCC = install-multilib
++T_CFLAGS = -Dinhibit_libc -D__gthr_posix_h

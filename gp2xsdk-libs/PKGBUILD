@@ -1,0 +1,21 @@
+#!/bin/bash
+# Contributor: Vladimír Vondruš <mosra@centrum.cz>
+pkgname=gp2xsdk-libs
+pkgver=2.16.1
+pkgrel=1
+pkgdesc="Official GamePark SDK for GP2X development - libraries"
+arch=('i686' 'x86_64')
+url="http://wiki.gp2x.org"
+license=('GPL')
+depends=()
+makedepends=()
+optdepends=()
+
+source=("http://dev.gp2x.com/sdk/gp2xsdk_linux.tar.gz")
+md5sums=('19e4e8e46fdf7571776cc74a58e5da15')
+
+build() {
+    mkdir -p "$pkgdir/usr/arm-gp2x-linux"
+    cd "$pkgdir/usr/arm-gp2x-linux"
+    tar -xzvf "$srcdir/gp2x-library.tar.gz"
+}

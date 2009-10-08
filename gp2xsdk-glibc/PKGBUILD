@@ -1,0 +1,61 @@
+#!/bin/bash
+# Contributor: Vladimír Vondruš <mosra@centrum.cz>
+pkgname=gp2xsdk-glibc
+pkgver=2.2.5
+pkgrel=1
+pkgdesc="Official GamePark SDK for GP2X development - glibc"
+arch=('i686' 'x86_64')
+url="http://wiki.gp2x.org"
+license=('GPL')
+depends=(gp2xsdk-binutils)
+makedepends=(gp2xsdk-gcc-prebuild)
+optdepends=()
+source=(
+    "ftp://ftp.gnu.org/gnu/glibc/glibc-$pkgver.tar.gz"
+    "ftp://ftp.gnu.org/gnu/glibc/glibc-linuxthreads-$pkgver.tar.gz"
+    "http://kaizo.org/misc/gp2x/1.4.0.tar.gz"
+    "gcc-3.4.6-glibc-$pkgver.patch"
+)
+md5sums=('e4c3eb8343b5df346ceaaec23459f1dc'
+         'c766a79a51668d7fa33f175a249655b4'
+         '0f882a2d131f89abbe4277317231e83e'
+         '60d4c8c277e9bc7b27bf70932e02c572')
+noextract=(
+    "glibc-linuxthreads-$pkgver.tar.gz"
+)
+
+build() {
+
+    unset CFLAGS
+    unset CXXFLAGS
+    # Pak jsou problémy s nedodělanými targety
+    unset MAKEFLAGS
+
+    _target='arm-gp2x-linux'
+
+    cd "$srcdir/1.4.0/include"
+    rm -f asm
+    ln -s "asm-arm" "asm" || return 1
+    cd asm
+    rm -f arch proc
+    ln -s "arch-mmsp2" "arch" || return 1
+    ln -s "proc-armv" "proc" || return 1
+
+    cd "$srcdir/glibc-$pkgver"
+    tar -xzvf "$startdir/glibc-linuxthreads-$pkgver.tar.gz"
+
+    patch -p1 < "$startdir/gcc-3.4.6-glibc-$pkgver.patch" || return 1
+
+    ./configure --prefix=/usr/$_target --host=$_target --build=$CHOST --with-cpu=arm9tdmi --with-headers=$srcdir/1.4.0/include --enable-add-ons=linuxthreads --enable-shared --enable-kernel=2.4.25 || return 1
+    make || return 1
+    make install_root=${pkgdir} install || return 1
+
+    # Kopírování headerů
+    msg "Copying kernel headers"
+    mkdir -p $pkgdir/usr/$_target/sys-include
+    cp -r $srcdir/1.4.0/include/* $pkgdir/usr/$_target/sys-include
+
+    # SVN mess
+    msg "Cleaning .svn mess"
+    find ${pkgdir}/ -name ".svn" -exec rm -r {} +
+}

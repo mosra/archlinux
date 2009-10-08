@@ -1,0 +1,1917 @@
+diff -urN glibc-2.2.5.orig/csu/Makefile glibc-2.2.5/csu/Makefile
+--- glibc-2.2.5.orig/csu/Makefile	2001-07-06 13:54:45.000000000 +0900
++++ glibc-2.2.5/csu/Makefile	2006-04-04 12:00:55.000000000 +0900
+@@ -92,7 +92,7 @@
+ $(objpfx)crt%.o: $(objpfx)crt%.S $(objpfx)defs.h
+ 	$(compile.S) -g0 $(ASFLAGS-.os) -o $@
+ 
+-CFLAGS-initfini.s = -g0 -fPIC -fno-inline-functions
++CFLAGS-initfini.s = -O1 -g0 -fPIC -fno-inline-functions
+ 
+ vpath initfini.c $(full_config_sysdirs)
+ 
+diff -urN glibc-2.2.5.orig/grp/initgroups.c glibc-2.2.5/grp/initgroups.c
+--- glibc-2.2.5.orig/grp/initgroups.c	2001-07-06 13:54:46.000000000 +0900
++++ glibc-2.2.5/grp/initgroups.c	2006-04-04 12:00:55.000000000 +0900
+@@ -176,7 +176,7 @@
+ 
+       /* This is really only for debugging.  */
+       if (NSS_STATUS_TRYAGAIN > status || status > NSS_STATUS_RETURN)
+-	__libc_fatal ("illegal status in " __FUNCTION__);
++	__libc_fatal ("illegal status in internal_getgrouplist");
+ 
+       if (status != NSS_STATUS_SUCCESS
+ 	  && nss_next_action (nip, status) == NSS_ACTION_RETURN)
+@@ -214,7 +214,7 @@
+     }
+   else
+     *ngroups = result;
+-      
++
+   memcpy (groups, newgroups, *ngroups * sizeof (gid_t));
+ 
+   free (newgroups);
+diff -urN glibc-2.2.5.orig/libio/swprintf.c glibc-2.2.5/libio/swprintf.c
+--- glibc-2.2.5.orig/libio/swprintf.c	2001-07-06 13:55:32.000000000 +0900
++++ glibc-2.2.5/libio/swprintf.c	2006-04-04 12:00:55.000000000 +0900
+@@ -1,4 +1,5 @@
+-/* Copyright (C) 1991,1995,1997,1998,1999,2000 Free Software Foundation, Inc.
++/* Copyright (C) 1991,1995,1997,1998,1999,2000,2003
++	Free Software Foundation, Inc.
+    This file is part of the GNU C Library.
+ 
+    The GNU C Library is free software; you can redistribute it and/or
+@@ -22,10 +23,7 @@
+ /* Write formatted output into S, according to the format string FORMAT.  */
+ /* VARARGS3 */
+ int
+-swprintf (s, n, format)
+-     wchar_t *s;
+-     size_t n;
+-     const wchar_t *format;
++swprintf (wchar_t *s, size_t n, const wchar_t *format, ...)
+ {
+   va_list arg;
+   int done;
+diff -urN glibc-2.2.5.orig/libio/swscanf.c glibc-2.2.5/libio/swscanf.c
+--- glibc-2.2.5.orig/libio/swscanf.c	2001-07-06 13:55:32.000000000 +0900
++++ glibc-2.2.5/libio/swscanf.c	2006-04-04 12:00:55.000000000 +0900
+@@ -1,4 +1,4 @@
+-/* Copyright (C) 1991, 1995, 1996, 1998, 1999 Free Software Foundation, Inc.
++/* Copyright (C) 1991,1995,1996,1998,1999,2003 Free Software Foundation, Inc.
+    This file is part of the GNU C Library.
+ 
+    The GNU C Library is free software; you can redistribute it and/or
+@@ -22,9 +22,7 @@
+ /* Read formatted input from S, according to the format string FORMAT.  */
+ /* VARARGS2 */
+ int
+-swscanf (s, format)
+-     const wchar_t *s;
+-     const wchar_t *format;
++swscanf (const wchar_t *s, const wchar_t *format, ...)
+ {
+   va_list arg;
+   int done;
+diff -urN glibc-2.2.5.orig/linuxthreads/Makefile glibc-2.2.5/linuxthreads/Makefile
+--- glibc-2.2.5.orig/linuxthreads/Makefile	2002-01-21 12:21:14.000000000 +0900
++++ glibc-2.2.5/linuxthreads/Makefile	2006-04-04 12:00:55.000000000 +0900
+@@ -54,7 +54,7 @@
+ extra-objs += crti.o
+ omit-deps += crti
+ 
+-CFLAGS-pt-initfini.s = -g0 -fPIC -fno-inline-functions
++CFLAGS-pt-initfini.s = -g0 -fPIC -fno-inline-functions -fno-unit-at-a-time
+ endif
+ 
+ librt-tests = ex10 ex11
+diff -urN glibc-2.2.5.orig/linuxthreads/internals.h glibc-2.2.5/linuxthreads/internals.h
+--- glibc-2.2.5.orig/linuxthreads/internals.h	2001-11-29 16:44:16.000000000 +0900
++++ glibc-2.2.5/linuxthreads/internals.h	2006-04-04 12:00:55.000000000 +0900
+@@ -552,7 +552,7 @@
+ /* Prototypes for compatibility functions.  */
+ extern int __pthread_attr_init_2_1 (pthread_attr_t *__attr);
+ extern int __pthread_attr_init_2_0 (pthread_attr_t *__attr);
+-extern int __pthread_create_2_1 (pthread_t *__restrict __thread,
++extern int __pthread_create_2_1 (pthread_t *__restrict __threadp,
+ 				 const pthread_attr_t *__attr,
+ 				 void *(*__start_routine) (void *),
+ 				 void *__restrict __arg);
+diff -urN glibc-2.2.5.orig/linuxthreads/internals.h.orig glibc-2.2.5/linuxthreads/internals.h.orig
+--- glibc-2.2.5.orig/linuxthreads/internals.h.orig	1970-01-01 09:00:00.000000000 +0900
++++ glibc-2.2.5/linuxthreads/internals.h.orig	2001-11-29 16:44:16.000000000 +0900
+@@ -0,0 +1,572 @@
++/* Linuxthreads - a simple clone()-based implementation of Posix        */
++/* threads for Linux.                                                   */
++/* Copyright (C) 1996 Xavier Leroy (Xavier.Leroy@inria.fr)              */
++/*                                                                      */
++/* This program is free software; you can redistribute it and/or        */
++/* modify it under the terms of the GNU Library General Public License  */
++/* as published by the Free Software Foundation; either version 2       */
++/* of the License, or (at your option) any later version.               */
++/*                                                                      */
++/* This program is distributed in the hope that it will be useful,      */
++/* but WITHOUT ANY WARRANTY; without even the implied warranty of       */
++/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        */
++/* GNU Library General Public License for more details.                 */
++
++#ifndef _INTERNALS_H
++#define _INTERNALS_H	1
++
++/* Internal data structures */
++
++/* Includes */
++
++#include <limits.h>
++#include <resolv.h>
++#include <setjmp.h>
++#include <signal.h>
++#include <unistd.h>
++#include <stackinfo.h>
++#include <sys/types.h>
++#include <bits/libc-tsd.h> /* for _LIBC_TSD_KEY_N */
++
++extern long int testandset (int *spinlock);
++extern int __compare_and_swap (long int *p, long int oldval, long int newval);
++
++#include "pt-machine.h"
++#include "semaphore.h"
++#include "../linuxthreads_db/thread_dbP.h"
++#include <hp-timing.h>
++
++#ifndef THREAD_GETMEM
++# define THREAD_GETMEM(descr, member) descr->member
++#endif
++#ifndef THREAD_GETMEM_NC
++# define THREAD_GETMEM_NC(descr, member) descr->member
++#endif
++#ifndef THREAD_SETMEM
++# define THREAD_SETMEM(descr, member, value) descr->member = (value)
++#endif
++#ifndef THREAD_SETMEM_NC
++# define THREAD_SETMEM_NC(descr, member, value) descr->member = (value)
++#endif
++
++/* Arguments passed to thread creation routine */
++
++struct pthread_start_args {
++  void * (*start_routine)(void *); /* function to run */
++  void * arg;                   /* its argument */
++  sigset_t mask;                /* initial signal mask for thread */
++  int schedpolicy;              /* initial scheduling policy (if any) */
++  struct sched_param schedparam; /* initial scheduling parameters (if any) */
++};
++
++
++/* We keep thread specific data in a special data structure, a two-level
++   array.  The top-level array contains pointers to dynamically allocated
++   arrays of a certain number of data pointers.  So we can implement a
++   sparse array.  Each dynamic second-level array has
++	PTHREAD_KEY_2NDLEVEL_SIZE
++   entries.  This value shouldn't be too large.  */
++#define PTHREAD_KEY_2NDLEVEL_SIZE	32
++
++/* We need to address PTHREAD_KEYS_MAX key with PTHREAD_KEY_2NDLEVEL_SIZE
++   keys in each subarray.  */
++#define PTHREAD_KEY_1STLEVEL_SIZE \
++  ((PTHREAD_KEYS_MAX + PTHREAD_KEY_2NDLEVEL_SIZE - 1) \
++   / PTHREAD_KEY_2NDLEVEL_SIZE)
++
++typedef void (*destr_function)(void *);
++
++struct pthread_key_struct {
++  int in_use;                   /* already allocated? */
++  destr_function destr;         /* destruction routine */
++};
++
++
++#define PTHREAD_START_ARGS_INITIALIZER(fct) \
++  { (void *(*) (void *)) fct, NULL, {{0, }}, 0, { 0 } }
++
++/* The type of thread descriptors */
++
++typedef struct _pthread_descr_struct * pthread_descr;
++
++/* Callback interface for removing the thread from waiting on an
++   object if it is cancelled while waiting or about to wait.
++   This hold a pointer to the object, and a pointer to a function
++   which ``extricates'' the thread from its enqueued state.
++   The function takes two arguments: pointer to the wait object,
++   and a pointer to the thread. It returns 1 if an extrication
++   actually occured, and hence the thread must also be signalled.
++   It returns 0 if the thread had already been extricated. */
++
++typedef struct _pthread_extricate_struct {
++    void *pu_object;
++    int (*pu_extricate_func)(void *, pthread_descr);
++} pthread_extricate_if;
++
++/* Atomic counter made possible by compare_and_swap */
++
++struct pthread_atomic {
++  long p_count;
++  int p_spinlock;
++};
++
++/* Context info for read write locks. The pthread_rwlock_info structure
++   is information about a lock that has been read-locked by the thread
++   in whose list this structure appears. The pthread_rwlock_context
++   is embedded in the thread context and contains a pointer to the
++   head of the list of lock info structures, as well as a count of
++   read locks that are untracked, because no info structure could be
++   allocated for them. */
++
++struct _pthread_rwlock_t;
++
++typedef struct _pthread_rwlock_info {
++  struct _pthread_rwlock_info *pr_next;
++  struct _pthread_rwlock_t *pr_lock;
++  int pr_lock_count;
++} pthread_readlock_info;
++
++struct _pthread_descr_struct {
++  union {
++    struct {
++      pthread_descr self;	/* Pointer to this structure */
++    } data;
++    void *__padding[16];
++  } p_header;
++  pthread_descr p_nextlive, p_prevlive;
++                                /* Double chaining of active threads */
++  pthread_descr p_nextwaiting;  /* Next element in the queue holding the thr */
++  pthread_descr p_nextlock;	/* can be on a queue and waiting on a lock */
++  pthread_t p_tid;              /* Thread identifier */
++  int p_pid;                    /* PID of Unix process */
++  int p_priority;               /* Thread priority (== 0 if not realtime) */
++  struct _pthread_fastlock * p_lock; /* Spinlock for synchronized accesses */
++  int p_signal;                 /* last signal received */
++  sigjmp_buf * p_signal_jmp;    /* where to siglongjmp on a signal or NULL */
++  sigjmp_buf * p_cancel_jmp;    /* where to siglongjmp on a cancel or NULL */
++  char p_terminated;            /* true if terminated e.g. by pthread_exit */
++  char p_detached;              /* true if detached */
++  char p_exited;                /* true if the assoc. process terminated */
++  void * p_retval;              /* placeholder for return value */
++  int p_retcode;                /* placeholder for return code */
++  pthread_descr p_joining;      /* thread joining on that thread or NULL */
++  struct _pthread_cleanup_buffer * p_cleanup; /* cleanup functions */
++  char p_cancelstate;           /* cancellation state */
++  char p_canceltype;            /* cancellation type (deferred/async) */
++  char p_canceled;              /* cancellation request pending */
++  int * p_errnop;               /* pointer to used errno variable */
++  int p_errno;                  /* error returned by last system call */
++  int * p_h_errnop;             /* pointer to used h_errno variable */
++  int p_h_errno;                /* error returned by last netdb function */
++  char * p_in_sighandler;       /* stack address of sighandler, or NULL */
++  char p_sigwaiting;            /* true if a sigwait() is in progress */
++  struct pthread_start_args p_start_args; /* arguments for thread creation */
++  void ** p_specific[PTHREAD_KEY_1STLEVEL_SIZE]; /* thread-specific data */
++  void * p_libc_specific[_LIBC_TSD_KEY_N]; /* thread-specific data for libc */
++  int p_userstack;		/* nonzero if the user provided the stack */
++  void *p_guardaddr;		/* address of guard area or NULL */
++  size_t p_guardsize;		/* size of guard area */
++  int p_nr;                     /* Index of descriptor in __pthread_handles */
++  int p_report_events;		/* Nonzero if events must be reported.  */
++  td_eventbuf_t p_eventbuf;     /* Data for event.  */
++  struct pthread_atomic p_resume_count; /* number of times restart() was
++					   called on thread */
++  char p_woken_by_cancel;       /* cancellation performed wakeup */
++  char p_condvar_avail;		/* flag if conditional variable became avail */
++  char p_sem_avail;             /* flag if semaphore became available */
++  pthread_extricate_if *p_extricate; /* See above */
++  pthread_readlock_info *p_readlock_list;  /* List of readlock info structs */
++  pthread_readlock_info *p_readlock_free;  /* Free list of structs */
++  int p_untracked_readlock_count;	/* Readlocks not tracked by list */
++  struct __res_state *p_resp;	/* Pointer to resolver state */
++  struct __res_state p_res;	/* per-thread resolver state */
++  int p_inheritsched;           /* copied from the thread attribute */
++#if HP_TIMING_AVAIL
++  hp_timing_t p_cpuclock_offset; /* Initial CPU clock for thread.  */
++#endif
++  /* New elements must be added at the end.  */
++} __attribute__ ((aligned(32))); /* We need to align the structure so that
++				    doubles are aligned properly.  This is 8
++				    bytes on MIPS and 16 bytes on MIPS64.
++				    32 bytes might give better cache
++				    utilization.  */
++
++
++/* The type of thread handles. */
++
++typedef struct pthread_handle_struct * pthread_handle;
++
++struct pthread_handle_struct {
++  struct _pthread_fastlock h_lock; /* Fast lock for sychronized access */
++  pthread_descr h_descr;        /* Thread descriptor or NULL if invalid */
++  char * h_bottom;              /* Lowest address in the stack thread */
++};
++
++/* The type of messages sent to the thread manager thread */
++
++struct pthread_request {
++  pthread_descr req_thread;     /* Thread doing the request */
++  enum {                        /* Request kind */
++    REQ_CREATE, REQ_FREE, REQ_PROCESS_EXIT, REQ_MAIN_THREAD_EXIT,
++    REQ_POST, REQ_DEBUG, REQ_KICK, REQ_FOR_EACH_THREAD
++  } req_kind;
++  union {                       /* Arguments for request */
++    struct {                    /* For REQ_CREATE: */
++      const pthread_attr_t * attr; /* thread attributes */
++      void * (*fn)(void *);     /*   start function */
++      void * arg;               /*   argument to start function */
++      sigset_t mask;            /*   signal mask */
++    } create;
++    struct {                    /* For REQ_FREE: */
++      pthread_t thread_id;      /*   identifier of thread to free */
++    } free;
++    struct {                    /* For REQ_PROCESS_EXIT: */
++      int code;                 /*   exit status */
++    } exit;
++    void * post;                /* For REQ_POST: the semaphore */
++    struct {			/* For REQ_FOR_EACH_THREAD: callback */
++      void (*fn)(void *, pthread_descr);
++      void *arg;
++    } for_each;
++  } req_args;
++};
++
++
++/* Signals used for suspend/restart and for cancellation notification.  */
++
++extern int __pthread_sig_restart;
++extern int __pthread_sig_cancel;
++
++/* Signal used for interfacing with gdb */
++
++extern int __pthread_sig_debug;
++
++/* Global array of thread handles, used for validating a thread id
++   and retrieving the corresponding thread descriptor. Also used for
++   mapping the available stack segments. */
++
++extern struct pthread_handle_struct __pthread_handles[PTHREAD_THREADS_MAX];
++
++/* Descriptor of the initial thread */
++
++extern struct _pthread_descr_struct __pthread_initial_thread;
++
++/* Descriptor of the manager thread */
++
++extern struct _pthread_descr_struct __pthread_manager_thread;
++
++/* Descriptor of the main thread */
++
++extern pthread_descr __pthread_main_thread;
++
++/* Limit between the stack of the initial thread (above) and the
++   stacks of other threads (below). Aligned on a STACK_SIZE boundary.
++   Initially 0, meaning that the current thread is (by definition)
++   the initial thread. */
++
++extern char *__pthread_initial_thread_bos;
++
++/* Indicate whether at least one thread has a user-defined stack (if 1),
++   or all threads have stacks supplied by LinuxThreads (if 0). */
++
++extern int __pthread_nonstandard_stacks;
++
++/* File descriptor for sending requests to the thread manager.
++   Initially -1, meaning that __pthread_initialize_manager must be called. */
++
++extern int __pthread_manager_request;
++
++/* Other end of the pipe for sending requests to the thread manager. */
++
++extern int __pthread_manager_reader;
++
++/* Limits of the thread manager stack. */
++
++extern char *__pthread_manager_thread_bos;
++extern char *__pthread_manager_thread_tos;
++
++#ifdef FLOATING_STACKS
++/* Maximum stack size.  */
++extern size_t __pthread_max_stacksize;
++#endif
++
++/* Pending request for a process-wide exit */
++
++extern int __pthread_exit_requested, __pthread_exit_code;
++
++/* Set to 1 by gdb if we're debugging */
++
++extern volatile int __pthread_threads_debug;
++
++/* Globally enabled events.  */
++extern volatile td_thr_events_t __pthread_threads_events;
++
++/* Pointer to descriptor of thread with last event.  */
++extern volatile pthread_descr __pthread_last_event;
++
++/* Flag which tells whether we are executing on SMP kernel. */
++extern int __pthread_smp_kernel;
++
++/* Return the handle corresponding to a thread id */
++
++static inline pthread_handle thread_handle(pthread_t id)
++{
++  return &__pthread_handles[id % PTHREAD_THREADS_MAX];
++}
++
++/* Validate a thread handle. Must have acquired h->h_spinlock before. */
++
++static inline int invalid_handle(pthread_handle h, pthread_t id)
++{
++  return h->h_descr == NULL || h->h_descr->p_tid != id || h->h_descr->p_terminated;
++}
++
++static inline int nonexisting_handle(pthread_handle h, pthread_t id)
++{
++  return h->h_descr == NULL || h->h_descr->p_tid != id;
++}
++
++/* Fill in defaults left unspecified by pt-machine.h.  */
++
++/* We round up a value with page size. */
++#ifndef page_roundup
++#define page_roundup(v,p) ((((size_t) (v)) + (p) - 1) & ~((p) - 1))
++#endif
++
++/* The page size we can get from the system.  This should likely not be
++   changed by the machine file but, you never know.  */
++#ifndef PAGE_SIZE
++#define PAGE_SIZE  (sysconf (_SC_PAGE_SIZE))
++#endif
++
++/* The max size of the thread stack segments.  If the default
++   THREAD_SELF implementation is used, this must be a power of two and
++   a multiple of PAGE_SIZE.  */
++#ifndef STACK_SIZE
++#define STACK_SIZE  (2 * 1024 * 1024)
++#endif
++
++/* The initial size of the thread stack.  Must be a multiple of PAGE_SIZE.  */
++#ifndef INITIAL_STACK_SIZE
++#define INITIAL_STACK_SIZE  (4 * PAGE_SIZE)
++#endif
++
++/* Size of the thread manager stack. The "- 32" avoids wasting space
++   with some malloc() implementations. */
++#ifndef THREAD_MANAGER_STACK_SIZE
++#define THREAD_MANAGER_STACK_SIZE  (2 * PAGE_SIZE - 32)
++#endif
++
++/* The base of the "array" of thread stacks.  The array will grow down from
++   here.  Defaults to the calculated bottom of the initial application
++   stack.  */
++#ifndef THREAD_STACK_START_ADDRESS
++#define THREAD_STACK_START_ADDRESS  __pthread_initial_thread_bos
++#endif
++
++/* Get some notion of the current stack.  Need not be exactly the top
++   of the stack, just something somewhere in the current frame.  */
++#ifndef CURRENT_STACK_FRAME
++#define CURRENT_STACK_FRAME  ({ char __csf; &__csf; })
++#endif
++
++/* Recover thread descriptor for the current thread */
++
++extern pthread_descr __pthread_find_self (void) __attribute__ ((const));
++
++static inline pthread_descr thread_self (void) __attribute__ ((const));
++static inline pthread_descr thread_self (void)
++{
++#ifdef THREAD_SELF
++  return THREAD_SELF;
++#else
++  char *sp = CURRENT_STACK_FRAME;
++  if (sp >= __pthread_initial_thread_bos)
++    return &__pthread_initial_thread;
++  else if (sp >= __pthread_manager_thread_bos
++	   && sp < __pthread_manager_thread_tos)
++    return &__pthread_manager_thread;
++  else if (__pthread_nonstandard_stacks)
++    return __pthread_find_self();
++  else
++#ifdef _STACK_GROWS_DOWN
++    return (pthread_descr)(((unsigned long)sp | (STACK_SIZE-1))+1) - 1;
++#else
++    return (pthread_descr)((unsigned long)sp &~ (STACK_SIZE-1));
++#endif
++#endif
++}
++
++/* If MEMORY_BARRIER isn't defined in pt-machine.h, assume the architecture
++   doesn't need a memory barrier instruction (e.g. Intel x86).  Some
++   architectures distinguish between full, read and write barriers.  */
++
++#ifndef MEMORY_BARRIER
++#define MEMORY_BARRIER()
++#endif
++#ifndef READ_MEMORY_BARRIER
++#define READ_MEMORY_BARRIER() MEMORY_BARRIER()
++#endif
++#ifndef WRITE_MEMORY_BARRIER
++#define WRITE_MEMORY_BARRIER() MEMORY_BARRIER()
++#endif
++
++/* Max number of times we must spin on a spinlock calling sched_yield().
++   After MAX_SPIN_COUNT iterations, we put the calling thread to sleep. */
++
++#ifndef MAX_SPIN_COUNT
++#define MAX_SPIN_COUNT 50
++#endif
++
++/* Max number of times the spinlock in the adaptive mutex implementation
++   spins actively on SMP systems.  */
++
++#ifndef MAX_ADAPTIVE_SPIN_COUNT
++#define MAX_ADAPTIVE_SPIN_COUNT 100
++#endif
++
++/* Duration of sleep (in nanoseconds) when we can't acquire a spinlock
++   after MAX_SPIN_COUNT iterations of sched_yield().
++   With the 2.0 and 2.1 kernels, this MUST BE > 2ms.
++   (Otherwise the kernel does busy-waiting for realtime threads,
++    giving other threads no chance to run.) */
++
++#ifndef SPIN_SLEEP_DURATION
++#define SPIN_SLEEP_DURATION 2000001
++#endif
++
++/* Debugging */
++
++#ifdef DEBUG
++#include <assert.h>
++#define ASSERT assert
++#define MSG __pthread_message
++#else
++#define ASSERT(x)
++#define MSG(msg,arg...)
++#endif
++
++/* Internal global functions */
++
++extern void __pthread_do_exit (void *retval, char *currentframe)
++     __attribute__ ((__noreturn__));
++extern void __pthread_destroy_specifics (void);
++extern void __pthread_perform_cleanup (char *currentframe);
++extern void __pthread_init_max_stacksize (void);
++extern int __pthread_initialize_manager (void);
++extern void __pthread_message (char * fmt, ...);
++extern int __pthread_manager (void *reqfd);
++extern int __pthread_manager_event (void *reqfd);
++extern void __pthread_manager_sighandler (int sig);
++extern void __pthread_reset_main_thread (void);
++extern void __pthread_once_fork_prepare (void);
++extern void __pthread_once_fork_parent (void);
++extern void __pthread_once_fork_child (void);
++extern void __flockfilelist (void);
++extern void __funlockfilelist (void);
++extern void __fresetlockfiles (void);
++extern void __pthread_manager_adjust_prio (int thread_prio);
++extern void __pthread_initialize_minimal (void);
++
++extern int __pthread_attr_setguardsize (pthread_attr_t *__attr,
++					size_t __guardsize);
++extern int __pthread_attr_getguardsize (const pthread_attr_t *__attr,
++					size_t *__guardsize);
++extern int __pthread_attr_setstackaddr (pthread_attr_t *__attr,
++					void *__stackaddr);
++extern int __pthread_attr_getstackaddr (const pthread_attr_t *__attr,
++					void **__stackaddr);
++extern int __pthread_attr_setstacksize (pthread_attr_t *__attr,
++					size_t __stacksize);
++extern int __pthread_attr_getstacksize (const pthread_attr_t *__attr,
++					size_t *__stacksize);
++extern int __pthread_attr_setstack (pthread_attr_t *__attr, void *__stackaddr,
++				    size_t __stacksize);
++extern int __pthread_attr_getstack (const pthread_attr_t *__attr, void **__stackaddr,
++				    size_t *__stacksize);
++extern int __pthread_getconcurrency (void);
++extern int __pthread_setconcurrency (int __level);
++extern int __pthread_mutex_timedlock (pthread_mutex_t *__mutex,
++				      const struct timespec *__abstime);
++extern int __pthread_mutexattr_getpshared (const pthread_mutexattr_t *__attr,
++					   int *__pshared);
++extern int __pthread_mutexattr_setpshared (pthread_mutexattr_t *__attr,
++					   int __pshared);
++extern int __pthread_mutexattr_gettype (const pthread_mutexattr_t *__attr,
++					int *__kind);
++extern void __pthread_kill_other_threads_np (void);
++
++extern void __pthread_restart_old(pthread_descr th);
++extern void __pthread_suspend_old(pthread_descr self);
++extern int __pthread_timedsuspend_old(pthread_descr self, const struct timespec *abs);
++
++extern void __pthread_restart_new(pthread_descr th);
++extern void __pthread_suspend_new(pthread_descr self);
++extern int __pthread_timedsuspend_new(pthread_descr self, const struct timespec *abs);
++
++extern void __pthread_wait_for_restart_signal(pthread_descr self);
++
++extern int __pthread_yield (void);
++
++extern int __pthread_rwlock_timedrdlock (pthread_rwlock_t *__restrict __rwlock,
++					 __const struct timespec *__restrict
++					 __abstime);
++extern int __pthread_rwlock_timedwrlock (pthread_rwlock_t *__restrict __rwlock,
++					 __const struct timespec *__restrict
++					 __abstime);
++extern int __pthread_rwlockattr_destroy (pthread_rwlockattr_t *__attr);
++
++extern int __pthread_barrierattr_getpshared (__const pthread_barrierattr_t *
++					     __restrict __attr,
++					     int *__restrict __pshared);
++
++extern int __pthread_spin_lock (pthread_spinlock_t *__lock);
++extern int __pthread_spin_trylock (pthread_spinlock_t *__lock);
++extern int __pthread_spin_unlock (pthread_spinlock_t *__lock);
++extern int __pthread_spin_init (pthread_spinlock_t *__lock, int __pshared);
++extern int __pthread_spin_destroy (pthread_spinlock_t *__lock);
++
++extern int __pthread_clock_gettime (hp_timing_t freq, struct timespec *tp);
++extern void __pthread_clock_settime (hp_timing_t offset);
++
++
++/* Global pointers to old or new suspend functions */
++
++extern void (*__pthread_restart)(pthread_descr);
++extern void (*__pthread_suspend)(pthread_descr);
++extern int (*__pthread_timedsuspend)(pthread_descr, const struct timespec *);
++
++/* Prototypes for the function without cancelation support when the
++   normal version has it.  */
++extern int __libc_close (int fd);
++extern int __libc_nanosleep (const struct timespec *requested_time,
++			     struct timespec *remaining);
++/* Prototypes for some of the new semaphore functions.  */
++extern int __new_sem_post (sem_t * sem);
++extern int __new_sem_init (sem_t *__sem, int __pshared, unsigned int __value);
++extern int __new_sem_wait (sem_t *__sem);
++extern int __new_sem_trywait (sem_t *__sem);
++extern int __new_sem_getvalue (sem_t *__restrict __sem, int *__restrict __sval);
++extern int __new_sem_destroy (sem_t *__sem);
++
++/* Prototypes for compatibility functions.  */
++extern int __pthread_attr_init_2_1 (pthread_attr_t *__attr);
++extern int __pthread_attr_init_2_0 (pthread_attr_t *__attr);
++extern int __pthread_create_2_1 (pthread_t *__restrict __thread,
++				 const pthread_attr_t *__attr,
++				 void *(*__start_routine) (void *),
++				 void *__restrict __arg);
++extern int __pthread_create_2_0 (pthread_t *__restrict thread,
++				 const pthread_attr_t *__attr,
++				 void *(*__start_routine) (void *),
++				 void *__restrict arg);
++
++/* The functions called the signal events.  */
++extern void __linuxthreads_create_event (void);
++extern void __linuxthreads_death_event (void);
++extern void __linuxthreads_reap_event (void);
++
++/* This function is called to initialize the pthread library.  */
++extern void __pthread_initialize (void);
++
++#endif /* internals.h */
+diff -urN glibc-2.2.5.orig/linuxthreads/sysdeps/pthread/pthread.h glibc-2.2.5/linuxthreads/sysdeps/pthread/pthread.h
+--- glibc-2.2.5.orig/linuxthreads/sysdeps/pthread/pthread.h	2001-03-16 06:12:31.000000000 +0900
++++ glibc-2.2.5/linuxthreads/sysdeps/pthread/pthread.h	2006-04-04 12:00:55.000000000 +0900
+@@ -160,7 +160,7 @@
+ /* Create a thread with given attributes ATTR (or default attributes
+    if ATTR is NULL), and call function START_ROUTINE with given
+    arguments ARG.  */
+-extern int pthread_create (pthread_t *__restrict __thread,
++extern int pthread_create (pthread_t *__restrict __threadp,
+ 			   __const pthread_attr_t *__restrict __attr,
+ 			   void *(*__start_routine) (void *),
+ 			   void *__restrict __arg) __THROW;
+@@ -588,7 +588,7 @@
+ extern int pthread_setcanceltype (int __type, int *__oldtype) __THROW;
+ 
+ /* Cancel THREAD immediately or at the next possibility.  */
+-extern int pthread_cancel (pthread_t __thread) __THROW;
++extern int pthread_cancel (pthread_t __cancelthread) __THROW;
+ 
+ /* Test for pending cancellation for the current thread and terminate
+    the thread as per pthread_exit(PTHREAD_CANCELED) if it has been
+diff -urN glibc-2.2.5.orig/linuxthreads/sysdeps/unix/sysv/linux/bits/sigthread.h glibc-2.2.5/linuxthreads/sysdeps/unix/sysv/linux/bits/sigthread.h
+--- glibc-2.2.5.orig/linuxthreads/sysdeps/unix/sysv/linux/bits/sigthread.h	2000-08-21 15:48:03.000000000 +0900
++++ glibc-2.2.5/linuxthreads/sysdeps/unix/sysv/linux/bits/sigthread.h	2006-04-04 12:00:55.000000000 +0900
+@@ -1,5 +1,5 @@
+ /* Signal handling function for threaded programs.
+-   Copyright (C) 1998, 1999, 2000 Free Software Foundation, Inc.
++   Copyright (C) 1998, 1999, 2000, 2002 Free Software Foundation, Inc.
+    This file is part of the GNU C Library.
+ 
+    The GNU C Library is free software; you can redistribute it and/or
+@@ -33,6 +33,6 @@
+ 			    __sigset_t *__restrict __oldmask)__THROW;
+ 
+ /* Send signal SIGNO to the given thread. */
+-extern int pthread_kill (pthread_t __thread, int __signo) __THROW;
++extern int pthread_kill (pthread_t __threadid, int __signo) __THROW;
+ 
+ #endif	/* bits/sigthread.h */
+diff -urN glibc-2.2.5.orig/linuxthreads_db/ChangeLog glibc-2.2.5/linuxthreads_db/ChangeLog
+--- glibc-2.2.5.orig/linuxthreads_db/ChangeLog	2001-04-13 09:09:54.000000000 +0900
++++ glibc-2.2.5/linuxthreads_db/ChangeLog	2006-04-04 12:00:55.000000000 +0900
+@@ -1,3 +1,43 @@
++2001-12-28  Andreas Jaeger  <aj@suse.de>
++
++	* td_init.c (td_init): Don't use __FUNCTION__ as literal.
++	* td_log.c (td_log): Likewise.
++	* td_ta_delete.c (td_ta_delete): Likewise.
++	* td_ta_get_nthreads.c (td_ta_get_nthreads): Likewise.
++	* td_ta_get_ph.c (td_ta_get_ph): Likewise.
++	* td_ta_map_id2thr.c (td_ta_map_id2thr): Likewise.
++	* td_ta_map_lwp2thr.c (td_ta_map_lwp2thr): Likewise.
++	* td_ta_new.c (td_ta_new): Likewise.
++	* td_ta_clear_event.c (td_ta_clear_event): Likewise.
++	* td_ta_enable_stats.c (td_ta_enable_stats): Likewise.
++	* td_ta_event_addr.c (td_ta_event_addr): Likewise.
++	* td_ta_event_getmsg.c (td_ta_event_getmsg): Likewise.
++	* td_ta_get_stats.c (td_ta_get_stats): Likewise.
++	* td_ta_reset_stats.c (td_ta_reset_stats): Likewise.
++	* td_ta_set_event.c (td_ta_set_event): Likewise.
++	* td_ta_setconcurrency.c (td_ta_setconcurrency): Likewise.
++	* td_ta_thr_iter.c (td_ta_thr_iter): Likewise.
++	* td_ta_tsd_iter.c (td_ta_tsd_iter): Likewise.
++	* td_thr_clear_event.c (td_thr_clear_event): Likewise.
++	* td_thr_dbresume.c (td_thr_dbresume): Likewise.
++	* td_thr_dbsuspend.c (td_thr_dbsuspend): Likewise.
++	* td_thr_event_enable.c (td_thr_event_enable): Likewise.
++	* td_thr_event_getmsg.c (td_thr_event_getmsg): Likewise.
++	* td_thr_get_info.c (td_thr_get_info): Likewise.
++	* td_thr_getfpregs.c (td_thr_getfpregs): Likewise.
++	* td_thr_getgregs.c (td_thr_getgregs): Likewise.
++	* td_thr_getxregs.c (td_thr_getxregs): Likewise.
++	* td_thr_getxregsize.c (td_thr_getxregsize): Likewise.
++	* td_thr_set_event.c (td_thr_set_event): Likewise.
++	* td_thr_setfpregs.c (td_thr_setfpregs): Likewise.
++	* td_thr_setgregs.c (td_thr_setgregs): Likewise.
++	* td_thr_setprio.c (td_thr_setprio): Likewise.
++	* td_thr_setsigpending.c (td_thr_setsigpending): Likewise.
++	* td_thr_setxregs.c (td_thr_setxregs): Likewise.
++	* td_thr_sigsetmask.c (td_thr_sigsetmask): Likewise.
++	* td_thr_tsd.c (td_thr_tsd): Likewise.
++	* td_thr_validate.c (td_thr_validate): Likewise.
++
+ 2001-04-12  Ulrich Drepper  <drepper@redhat.com>
+ 
+ 	* td_ta_map_id2thr.c: If thread terminated return TD_NOTHR.
+diff -urN glibc-2.2.5.orig/linuxthreads_db/td_init.c glibc-2.2.5/linuxthreads_db/td_init.c
+--- glibc-2.2.5.orig/linuxthreads_db/td_init.c	2001-07-06 14:27:23.000000000 +0900
++++ glibc-2.2.5/linuxthreads_db/td_init.c	2006-04-04 12:00:55.000000000 +0900
+@@ -1,5 +1,5 @@
+ /* Initialization function of thread debugger support library.
+-   Copyright (C) 1999 Free Software Foundation, Inc.
++   Copyright (C) 1999, 2001 Free Software Foundation, Inc.
+    This file is part of the GNU C Library.
+    Contributed by Ulrich Drepper <drepper@cygnus.com>, 1999.
+ 
+@@ -27,6 +27,6 @@
+ td_init (void)
+ {
+   /* XXX We have to figure out what has to be done.  */
+-  LOG (__FUNCTION__);
++  LOG ("td_init");
+   return TD_OK;
+ }
+diff -urN glibc-2.2.5.orig/linuxthreads_db/td_log.c glibc-2.2.5/linuxthreads_db/td_log.c
+--- glibc-2.2.5.orig/linuxthreads_db/td_log.c	2001-07-06 14:27:23.000000000 +0900
++++ glibc-2.2.5/linuxthreads_db/td_log.c	2006-04-04 12:00:55.000000000 +0900
+@@ -1,5 +1,5 @@
+ /* Noop, left for historical reasons.
+-   Copyright (C) 1999 Free Software Foundation, Inc.
++   Copyright (C) 1999, 2001 Free Software Foundation, Inc.
+    This file is part of the GNU C Library.
+    Contributed by Ulrich Drepper <drepper@cygnus.com>, 1999.
+ 
+@@ -25,8 +25,8 @@
+ td_log (void)
+ {
+   /* This interface is deprecated in the Sun interface.  We provide it
+-     for compatibility but don't do anyhting ourself.  We might in
++     for compatibility but don't do anything ourself.  We might in
+      future do some logging if this seems reasonable.  */
+-  LOG (__FUNCTION__);
++  LOG ("td_log");
+   return TD_OK;
+ }
+diff -urN glibc-2.2.5.orig/linuxthreads_db/td_ta_clear_event.c glibc-2.2.5/linuxthreads_db/td_ta_clear_event.c
+--- glibc-2.2.5.orig/linuxthreads_db/td_ta_clear_event.c	2001-07-06 14:27:23.000000000 +0900
++++ glibc-2.2.5/linuxthreads_db/td_ta_clear_event.c	2006-04-04 12:00:55.000000000 +0900
+@@ -1,5 +1,5 @@
+ /* Globally disable events.
+-   Copyright (C) 1999 Free Software Foundation, Inc.
++   Copyright (C) 1999, 2001 Free Software Foundation, Inc.
+    This file is part of the GNU C Library.
+    Contributed by Ulrich Drepper <drepper@cygnus.com>, 1999.
+ 
+@@ -29,7 +29,7 @@
+   td_thr_events_t old_event;
+   int i;
+ 
+-  LOG (__FUNCTION__);
++  LOG ("td_ta_clear_event");
+ 
+   /* Test whether the TA parameter is ok.  */
+   if (! ta_ok (ta))
+diff -urN glibc-2.2.5.orig/linuxthreads_db/td_ta_delete.c glibc-2.2.5/linuxthreads_db/td_ta_delete.c
+--- glibc-2.2.5.orig/linuxthreads_db/td_ta_delete.c	2001-07-06 14:27:23.000000000 +0900
++++ glibc-2.2.5/linuxthreads_db/td_ta_delete.c	2006-04-04 12:00:55.000000000 +0900
+@@ -1,5 +1,5 @@
+ /* Detach to target process.
+-   Copyright (C) 1999 Free Software Foundation, Inc.
++   Copyright (C) 1999, 2001 Free Software Foundation, Inc.
+    This file is part of the GNU C Library.
+    Contributed by Ulrich Drepper <drepper@cygnus.com>, 1999.
+ 
+@@ -26,7 +26,7 @@
+ td_err_e
+ td_ta_delete (td_thragent_t *ta)
+ {
+-  LOG (__FUNCTION__);
++  LOG ("td_ta_delete");
+ 
+   /* Safety check.  */
+   if (ta == NULL || __td_agent_list == NULL)
+diff -urN glibc-2.2.5.orig/linuxthreads_db/td_ta_enable_stats.c glibc-2.2.5/linuxthreads_db/td_ta_enable_stats.c
+--- glibc-2.2.5.orig/linuxthreads_db/td_ta_enable_stats.c	2001-07-06 14:27:23.000000000 +0900
++++ glibc-2.2.5/linuxthreads_db/td_ta_enable_stats.c	2006-04-04 12:00:55.000000000 +0900
+@@ -1,5 +1,5 @@
+ /* Enable collection of statistics for process.
+-   Copyright (C) 1999 Free Software Foundation, Inc.
++   Copyright (C) 1999, 2001 Free Software Foundation, Inc.
+    This file is part of the GNU C Library.
+    Contributed by Ulrich Drepper <drepper@cygnus.com>, 1999.
+ 
+@@ -25,7 +25,7 @@
+ td_ta_enable_stats (const td_thragent_t *ta, int enable)
+ {
+   /* XXX We have to figure out what has to be done.  */
+-  LOG (__FUNCTION__);
++  LOG ("td_ta_enable_stats");
+ 
+   /* Test whether the TA parameter is ok.  */
+   if (! ta_ok (ta))
+diff -urN glibc-2.2.5.orig/linuxthreads_db/td_ta_event_addr.c glibc-2.2.5/linuxthreads_db/td_ta_event_addr.c
+--- glibc-2.2.5.orig/linuxthreads_db/td_ta_event_addr.c	2001-07-06 14:27:23.000000000 +0900
++++ glibc-2.2.5/linuxthreads_db/td_ta_event_addr.c	2006-04-04 12:00:55.000000000 +0900
+@@ -27,7 +27,7 @@
+   td_err_e res = TD_NOEVENT;
+   int idx = -1;
+ 
+-  LOG (__FUNCTION__);
++  LOG ("td_ta_event_addr");
+ 
+   /* Test whether the TA parameter is ok.  */
+   if (! ta_ok (ta))
+diff -urN glibc-2.2.5.orig/linuxthreads_db/td_ta_event_getmsg.c glibc-2.2.5/linuxthreads_db/td_ta_event_getmsg.c
+--- glibc-2.2.5.orig/linuxthreads_db/td_ta_event_getmsg.c	2001-07-06 14:27:23.000000000 +0900
++++ glibc-2.2.5/linuxthreads_db/td_ta_event_getmsg.c	2006-04-04 12:00:55.000000000 +0900
+@@ -1,5 +1,5 @@
+ /* Retrieve event.
+-   Copyright (C) 1999 Free Software Foundation, Inc.
++   Copyright (C) 1999, 2001 Free Software Foundation, Inc.
+    This file is part of the GNU C Library.
+    Contributed by Ulrich Drepper <drepper@cygnus.com>, 1999.
+ 
+@@ -32,7 +32,7 @@
+   td_eventbuf_t event;
+   psaddr_t addr;
+ 
+-  LOG (__FUNCTION__);
++  LOG ("td_ta_event_getmsg");
+ 
+   /* Test whether the TA parameter is ok.  */
+   if (! ta_ok (ta))
+diff -urN glibc-2.2.5.orig/linuxthreads_db/td_ta_get_nthreads.c glibc-2.2.5/linuxthreads_db/td_ta_get_nthreads.c
+--- glibc-2.2.5.orig/linuxthreads_db/td_ta_get_nthreads.c	2001-07-06 14:27:23.000000000 +0900
++++ glibc-2.2.5/linuxthreads_db/td_ta_get_nthreads.c	2006-04-04 12:00:55.000000000 +0900
+@@ -25,7 +25,7 @@
+ {
+   psaddr_t addr;
+ 
+-  LOG (__FUNCTION__);
++  LOG ("td_ta_get_nthreads");
+ 
+   /* Test whether the TA parameter is ok.  */
+   if (! ta_ok (ta))
+diff -urN glibc-2.2.5.orig/linuxthreads_db/td_ta_get_ph.c glibc-2.2.5/linuxthreads_db/td_ta_get_ph.c
+--- glibc-2.2.5.orig/linuxthreads_db/td_ta_get_ph.c	2001-07-06 14:27:23.000000000 +0900
++++ glibc-2.2.5/linuxthreads_db/td_ta_get_ph.c	2006-04-04 12:00:55.000000000 +0900
+@@ -1,5 +1,5 @@
+ /* Get external process handle.
+-   Copyright (C) 1999 Free Software Foundation, Inc.
++   Copyright (C) 1999, 2001 Free Software Foundation, Inc.
+    This file is part of the GNU C Library.
+    Contributed by Ulrich Drepper <drepper@cygnus.com>, 1999.
+ 
+@@ -24,7 +24,7 @@
+ td_err_e
+ td_ta_get_ph (const td_thragent_t *ta, struct ps_prochandle **ph)
+ {
+-  LOG (__FUNCTION__);
++  LOG ("td_ta_get_ph");
+ 
+   /* Test whether the TA parameter is ok.  */
+   if (! ta_ok (ta))
+diff -urN glibc-2.2.5.orig/linuxthreads_db/td_ta_get_stats.c glibc-2.2.5/linuxthreads_db/td_ta_get_stats.c
+--- glibc-2.2.5.orig/linuxthreads_db/td_ta_get_stats.c	2001-07-06 14:27:23.000000000 +0900
++++ glibc-2.2.5/linuxthreads_db/td_ta_get_stats.c	2006-04-04 12:00:55.000000000 +0900
+@@ -1,5 +1,5 @@
+ /* Retrieve statistics for process.
+-   Copyright (C) 1999 Free Software Foundation, Inc.
++   Copyright (C) 1999, 2001 Free Software Foundation, Inc.
+    This file is part of the GNU C Library.
+    Contributed by Ulrich Drepper <drepper@cygnus.com>, 1999.
+ 
+@@ -25,7 +25,7 @@
+ td_ta_get_stats (const td_thragent_t *ta, td_ta_stats_t *statsp)
+ {
+   /* XXX We have to figure out what has to be done.  */
+-  LOG (__FUNCTION__);
++  LOG ("td_ta_get_stats");
+ 
+   /* Test whether the TA parameter is ok.  */
+   if (! ta_ok (ta))
+diff -urN glibc-2.2.5.orig/linuxthreads_db/td_ta_map_id2thr.c glibc-2.2.5/linuxthreads_db/td_ta_map_id2thr.c
+--- glibc-2.2.5.orig/linuxthreads_db/td_ta_map_id2thr.c	2001-07-06 14:27:23.000000000 +0900
++++ glibc-2.2.5/linuxthreads_db/td_ta_map_id2thr.c	2006-04-04 12:00:55.000000000 +0900
+@@ -28,7 +28,7 @@
+   struct _pthread_descr_struct pds;
+   int pthread_threads_max;
+ 
+-  LOG (__FUNCTION__);
++  LOG ("td_ta_map_id2thr");
+ 
+   /* Test whether the TA parameter is ok.  */
+   if (! ta_ok (ta))
+diff -urN glibc-2.2.5.orig/linuxthreads_db/td_ta_map_lwp2thr.c glibc-2.2.5/linuxthreads_db/td_ta_map_lwp2thr.c
+--- glibc-2.2.5.orig/linuxthreads_db/td_ta_map_lwp2thr.c	2001-07-06 14:27:23.000000000 +0900
++++ glibc-2.2.5/linuxthreads_db/td_ta_map_lwp2thr.c	2006-04-04 12:00:55.000000000 +0900
+@@ -1,5 +1,5 @@
+ /* Which thread is running on an lwp?
+-   Copyright (C) 1999 Free Software Foundation, Inc.
++   Copyright (C) 1999, 2001 Free Software Foundation, Inc.
+    This file is part of the GNU C Library.
+    Contributed by Ulrich Drepper <drepper@cygnus.com>, 1999.
+ 
+@@ -34,7 +34,7 @@
+ # define num 1
+ #endif
+ 
+-  LOG (__FUNCTION__);
++  LOG ("td_ta_map_lwp2thr");
+ 
+   /* Test whether the TA parameter is ok.  */
+   if (! ta_ok (ta))
+diff -urN glibc-2.2.5.orig/linuxthreads_db/td_ta_new.c glibc-2.2.5/linuxthreads_db/td_ta_new.c
+--- glibc-2.2.5.orig/linuxthreads_db/td_ta_new.c	2001-07-06 14:27:23.000000000 +0900
++++ glibc-2.2.5/linuxthreads_db/td_ta_new.c	2006-04-04 12:00:55.000000000 +0900
+@@ -35,7 +35,7 @@
+   psaddr_t addr;
+   struct agent_list *elemp;
+ 
+-  LOG (__FUNCTION__);
++  LOG ("td_ta_new");
+ 
+   /* Get the global event mask.  This is one of the variables which
+      are new in the thread library to enable debugging.  If it is
+diff -urN glibc-2.2.5.orig/linuxthreads_db/td_ta_reset_stats.c glibc-2.2.5/linuxthreads_db/td_ta_reset_stats.c
+--- glibc-2.2.5.orig/linuxthreads_db/td_ta_reset_stats.c	2001-07-06 14:27:23.000000000 +0900
++++ glibc-2.2.5/linuxthreads_db/td_ta_reset_stats.c	2006-04-04 12:00:55.000000000 +0900
+@@ -1,5 +1,5 @@
+ /* Reset statistics.
+-   Copyright (C) 1999 Free Software Foundation, Inc.
++   Copyright (C) 1999, 2001 Free Software Foundation, Inc.
+    This file is part of the GNU C Library.
+    Contributed by Ulrich Drepper <drepper@cygnus.com>, 1999.
+ 
+@@ -25,7 +25,7 @@
+ td_ta_reset_stats (const td_thragent_t *ta)
+ {
+   /* XXX We have to figure out what has to be done.  */
+-  LOG (__FUNCTION__);
++  LOG ("td_ta_reset_stats");
+ 
+   /* Test whether the TA parameter is ok.  */
+   if (! ta_ok (ta))
+diff -urN glibc-2.2.5.orig/linuxthreads_db/td_ta_set_event.c glibc-2.2.5/linuxthreads_db/td_ta_set_event.c
+--- glibc-2.2.5.orig/linuxthreads_db/td_ta_set_event.c	2001-07-06 14:27:23.000000000 +0900
++++ glibc-2.2.5/linuxthreads_db/td_ta_set_event.c	2006-04-04 12:00:55.000000000 +0900
+@@ -1,5 +1,5 @@
+ /* Globally enable events.
+-   Copyright (C) 1999 Free Software Foundation, Inc.
++   Copyright (C) 1999, 2001 Free Software Foundation, Inc.
+    This file is part of the GNU C Library.
+    Contributed by Ulrich Drepper <drepper@cygnus.com>, 1999.
+ 
+@@ -29,7 +29,7 @@
+   td_thr_events_t old_event;
+   int i;
+ 
+-  LOG (__FUNCTION__);
++  LOG ("td_ta_set_event");
+ 
+   /* Test whether the TA parameter is ok.  */
+   if (! ta_ok (ta))
+diff -urN glibc-2.2.5.orig/linuxthreads_db/td_ta_setconcurrency.c glibc-2.2.5/linuxthreads_db/td_ta_setconcurrency.c
+--- glibc-2.2.5.orig/linuxthreads_db/td_ta_setconcurrency.c	2001-07-06 14:27:23.000000000 +0900
++++ glibc-2.2.5/linuxthreads_db/td_ta_setconcurrency.c	2006-04-04 12:00:55.000000000 +0900
+@@ -1,5 +1,5 @@
+ /* Set suggested concurrency level for process.
+-   Copyright (C) 1999 Free Software Foundation, Inc.
++   Copyright (C) 1999, 2001 Free Software Foundation, Inc.
+    This file is part of the GNU C Library.
+    Contributed by Ulrich Drepper <drepper@cygnus.com>, 1999.
+ 
+@@ -25,7 +25,7 @@
+ td_ta_setconcurrency (const td_thragent_t *ta, int level)
+ {
+   /* This is something LinuxThreads does not support.  */
+-  LOG (__FUNCTION__);
++  LOG ("td_ta_setconcurrency");
+ 
+   /* Test whether the TA parameter is ok.  */
+   if (! ta_ok (ta))
+diff -urN glibc-2.2.5.orig/linuxthreads_db/td_ta_thr_iter.c glibc-2.2.5/linuxthreads_db/td_ta_thr_iter.c
+--- glibc-2.2.5.orig/linuxthreads_db/td_ta_thr_iter.c	2001-07-06 14:27:23.000000000 +0900
++++ glibc-2.2.5/linuxthreads_db/td_ta_thr_iter.c	2006-04-04 12:00:55.000000000 +0900
+@@ -1,5 +1,5 @@
+ /* Iterate over a process's threads.
+-   Copyright (C) 1999, 2000 Free Software Foundation, Inc.
++   Copyright (C) 1999, 2000, 2001 Free Software Foundation, Inc.
+    This file is part of the GNU C Library.
+    Contributed by Ulrich Drepper <drepper@cygnus.com>, 1999.
+ 
+@@ -86,7 +86,7 @@
+ # define num 1
+ #endif
+ 
+-  LOG (__FUNCTION__);
++  LOG ("td_ta_thr_iter");
+ 
+   /* Test whether the TA parameter is ok.  */
+   if (! ta_ok (ta))
+diff -urN glibc-2.2.5.orig/linuxthreads_db/td_ta_tsd_iter.c glibc-2.2.5/linuxthreads_db/td_ta_tsd_iter.c
+--- glibc-2.2.5.orig/linuxthreads_db/td_ta_tsd_iter.c	2001-07-06 14:27:23.000000000 +0900
++++ glibc-2.2.5/linuxthreads_db/td_ta_tsd_iter.c	2006-04-04 12:00:55.000000000 +0900
+@@ -1,5 +1,5 @@
+ /* Iterate over a process's thread-specific data.
+-   Copyright (C) 1999, 2000 Free Software Foundation, Inc.
++   Copyright (C) 1999, 2000, 2001 Free Software Foundation, Inc.
+    This file is part of the GNU C Library.
+    Contributed by Ulrich Drepper <drepper@cygnus.com>, 1999.
+ 
+@@ -29,7 +29,7 @@
+   int pthread_keys_max;
+   int cnt;
+ 
+-  LOG (__FUNCTION__);
++  LOG ("td_ta_tsd_iter");
+ 
+   /* Test whether the TA parameter is ok.  */
+   if (! ta_ok (ta))
+diff -urN glibc-2.2.5.orig/linuxthreads_db/td_thr_clear_event.c glibc-2.2.5/linuxthreads_db/td_thr_clear_event.c
+--- glibc-2.2.5.orig/linuxthreads_db/td_thr_clear_event.c	2001-07-06 14:27:23.000000000 +0900
++++ glibc-2.2.5/linuxthreads_db/td_thr_clear_event.c	2006-04-04 12:00:55.000000000 +0900
+@@ -1,5 +1,5 @@
+ /* Disable specific event for thread.
+-   Copyright (C) 1999 Free Software Foundation, Inc.
++   Copyright (C) 1999, 2001 Free Software Foundation, Inc.
+    This file is part of the GNU C Library.
+    Contributed by Ulrich Drepper <drepper@cygnus.com>, 1999.
+ 
+@@ -31,7 +31,7 @@
+   td_thr_events_t old_event;
+   int i;
+ 
+-  LOG (__FUNCTION__);
++  LOG ("td_thr_clear_event");
+ 
+   /* Write the new value into the thread data structure.  */
+   if (ps_pdread (th->th_ta_p->ph,
+diff -urN glibc-2.2.5.orig/linuxthreads_db/td_thr_dbresume.c glibc-2.2.5/linuxthreads_db/td_thr_dbresume.c
+--- glibc-2.2.5.orig/linuxthreads_db/td_thr_dbresume.c	2001-07-06 14:27:23.000000000 +0900
++++ glibc-2.2.5/linuxthreads_db/td_thr_dbresume.c	2006-04-04 12:00:55.000000000 +0900
+@@ -1,5 +1,5 @@
+ /* Resume execution of given thread.
+-   Copyright (C) 1999 Free Software Foundation, Inc.
++   Copyright (C) 1999, 2001 Free Software Foundation, Inc.
+    This file is part of the GNU C Library.
+    Contributed by Ulrich Drepper <drepper@cygnus.com>, 1999.
+ 
+@@ -25,6 +25,6 @@
+ td_thr_dbresume (const td_thrhandle_t *th)
+ {
+   /* XXX We have to figure out what has to be done.  */
+-  LOG (__FUNCTION__);
++  LOG ("td_thr_dbresume");
+   return TD_NOCAPAB;
+ }
+diff -urN glibc-2.2.5.orig/linuxthreads_db/td_thr_dbsuspend.c glibc-2.2.5/linuxthreads_db/td_thr_dbsuspend.c
+--- glibc-2.2.5.orig/linuxthreads_db/td_thr_dbsuspend.c	2001-07-06 14:27:23.000000000 +0900
++++ glibc-2.2.5/linuxthreads_db/td_thr_dbsuspend.c	2006-04-04 12:00:55.000000000 +0900
+@@ -1,5 +1,5 @@
+ /* Suspend execution of given thread.
+-   Copyright (C) 1999 Free Software Foundation, Inc.
++   Copyright (C) 1999, 2001 Free Software Foundation, Inc.
+    This file is part of the GNU C Library.
+    Contributed by Ulrich Drepper <drepper@cygnus.com>, 1999.
+ 
+@@ -25,6 +25,6 @@
+ td_thr_dbsuspend (const td_thrhandle_t *th)
+ {
+   /* XXX We have to figure out what has to be done.  */
+-  LOG (__FUNCTION__);
++  LOG ("td_thr_dbsuspend");
+   return TD_NOCAPAB;
+ }
+diff -urN glibc-2.2.5.orig/linuxthreads_db/td_thr_event_enable.c glibc-2.2.5/linuxthreads_db/td_thr_event_enable.c
+--- glibc-2.2.5.orig/linuxthreads_db/td_thr_event_enable.c	2001-07-06 14:27:23.000000000 +0900
++++ glibc-2.2.5/linuxthreads_db/td_thr_event_enable.c	2006-04-04 12:00:55.000000000 +0900
+@@ -1,5 +1,5 @@
+ /* Enable event process-wide.
+-   Copyright (C) 1999 Free Software Foundation, Inc.
++   Copyright (C) 1999, 2001 Free Software Foundation, Inc.
+    This file is part of the GNU C Library.
+    Contributed by Ulrich Drepper <drepper@cygnus.com>, 1999.
+ 
+@@ -28,7 +28,7 @@
+      const td_thrhandle_t *th;
+      int onoff;
+ {
+-  LOG (__FUNCTION__);
++  LOG ("td_thr_event_enable");
+ 
+   /* Write the new value into the thread data structure.  */
+   if (ps_pdwrite (th->th_ta_p->ph,
+diff -urN glibc-2.2.5.orig/linuxthreads_db/td_thr_event_getmsg.c glibc-2.2.5/linuxthreads_db/td_thr_event_getmsg.c
+--- glibc-2.2.5.orig/linuxthreads_db/td_thr_event_getmsg.c	2001-07-06 14:27:23.000000000 +0900
++++ glibc-2.2.5/linuxthreads_db/td_thr_event_getmsg.c	2006-04-04 12:00:55.000000000 +0900
+@@ -1,5 +1,5 @@
+ /* Retrieve event.
+-   Copyright (C) 1999 Free Software Foundation, Inc.
++   Copyright (C) 1999, 2001 Free Software Foundation, Inc.
+    This file is part of the GNU C Library.
+    Contributed by Ulrich Drepper <drepper@cygnus.com>, 1999.
+ 
+@@ -29,7 +29,7 @@
+ {
+   td_eventbuf_t event;
+ 
+-  LOG (__FUNCTION__);
++  LOG ("td_thr_event_getmsg");
+ 
+   /* Read the even structure from the target.  */
+   if (ps_pdread (th->th_ta_p->ph,
+diff -urN glibc-2.2.5.orig/linuxthreads_db/td_thr_get_info.c glibc-2.2.5/linuxthreads_db/td_thr_get_info.c
+--- glibc-2.2.5.orig/linuxthreads_db/td_thr_get_info.c	2001-07-06 14:27:23.000000000 +0900
++++ glibc-2.2.5/linuxthreads_db/td_thr_get_info.c	2006-04-04 12:00:55.000000000 +0900
+@@ -1,5 +1,5 @@
+ /* Get thread information.
+-   Copyright (C) 1999, 2000 Free Software Foundation, Inc.
++   Copyright (C) 1999, 2000, 2001 Free Software Foundation, Inc.
+    This file is part of the GNU C Library.
+    Contributed by Ulrich Drepper <drepper@cygnus.com>, 1999.
+ 
+@@ -29,7 +29,7 @@
+ {
+   struct _pthread_descr_struct pds;
+ 
+-  LOG (__FUNCTION__);
++  LOG ("td_thr_get_info");
+ 
+   /* Get the thread descriptor.  */
+   if (ps_pdread (th->th_ta_p->ph, th->th_unique, &pds,
+diff -urN glibc-2.2.5.orig/linuxthreads_db/td_thr_getfpregs.c glibc-2.2.5/linuxthreads_db/td_thr_getfpregs.c
+--- glibc-2.2.5.orig/linuxthreads_db/td_thr_getfpregs.c	2001-07-06 14:27:23.000000000 +0900
++++ glibc-2.2.5/linuxthreads_db/td_thr_getfpregs.c	2006-04-04 12:00:55.000000000 +0900
+@@ -26,7 +26,7 @@
+ {
+   struct _pthread_descr_struct pds;
+ 
+-  LOG (__FUNCTION__);
++  LOG ("td_thr_getfpregs");
+ 
+   /* We have to get the state and the PID for this thread.  */
+   if (ps_pdread (th->th_ta_p->ph, th->th_unique, &pds,
+diff -urN glibc-2.2.5.orig/linuxthreads_db/td_thr_getgregs.c glibc-2.2.5/linuxthreads_db/td_thr_getgregs.c
+--- glibc-2.2.5.orig/linuxthreads_db/td_thr_getgregs.c	2001-07-06 14:27:23.000000000 +0900
++++ glibc-2.2.5/linuxthreads_db/td_thr_getgregs.c	2006-04-04 12:00:55.000000000 +0900
+@@ -26,7 +26,7 @@
+ {
+   struct _pthread_descr_struct pds;
+ 
+-  LOG (__FUNCTION__);
++  LOG ("td_thr_getgregs");
+ 
+   /* We have to get the state and the PID for this thread.  */
+   if (ps_pdread (th->th_ta_p->ph, th->th_unique, &pds,
+diff -urN glibc-2.2.5.orig/linuxthreads_db/td_thr_getxregs.c glibc-2.2.5/linuxthreads_db/td_thr_getxregs.c
+--- glibc-2.2.5.orig/linuxthreads_db/td_thr_getxregs.c	2001-07-06 14:27:23.000000000 +0900
++++ glibc-2.2.5/linuxthreads_db/td_thr_getxregs.c	2006-04-04 12:00:55.000000000 +0900
+@@ -1,5 +1,5 @@
+ /* Get a thread's extra state register set.
+-   Copyright (C) 1999 Free Software Foundation, Inc.
++   Copyright (C) 1999, 2001 Free Software Foundation, Inc.
+    This file is part of the GNU C Library.
+    Contributed by Ulrich Drepper <drepper@cygnus.com>, 1999.
+ 
+@@ -25,6 +25,6 @@
+ td_thr_getxregs (const td_thrhandle_t *th, void *xregs)
+ {
+   /* XXX This might be platform specific.  */
+-  LOG (__FUNCTION__);
++  LOG ("td_thr_getxregs");
+   return TD_NOXREGS;
+ }
+diff -urN glibc-2.2.5.orig/linuxthreads_db/td_thr_getxregsize.c glibc-2.2.5/linuxthreads_db/td_thr_getxregsize.c
+--- glibc-2.2.5.orig/linuxthreads_db/td_thr_getxregsize.c	2001-07-06 14:27:23.000000000 +0900
++++ glibc-2.2.5/linuxthreads_db/td_thr_getxregsize.c	2006-04-04 12:00:55.000000000 +0900
+@@ -1,5 +1,5 @@
+ /* Get the size of the extra state register set for this architecture.
+-   Copyright (C) 1999 Free Software Foundation, Inc.
++   Copyright (C) 1999, 2001 Free Software Foundation, Inc.
+    This file is part of the GNU C Library.
+    Contributed by Ulrich Drepper <drepper@cygnus.com>, 1999.
+ 
+@@ -25,6 +25,6 @@
+ td_thr_getxregsize (const td_thrhandle_t *th, int *sizep)
+ {
+   /* XXX This might be platform specific.  */
+-  LOG (__FUNCTION__);
++  LOG ("td_thr_getxregsize");
+   return TD_NOXREGS;
+ }
+diff -urN glibc-2.2.5.orig/linuxthreads_db/td_thr_set_event.c glibc-2.2.5/linuxthreads_db/td_thr_set_event.c
+--- glibc-2.2.5.orig/linuxthreads_db/td_thr_set_event.c	2001-07-06 14:27:23.000000000 +0900
++++ glibc-2.2.5/linuxthreads_db/td_thr_set_event.c	2006-04-04 12:00:55.000000000 +0900
+@@ -1,5 +1,5 @@
+ /* Enable specific event for thread.
+-   Copyright (C) 1999 Free Software Foundation, Inc.
++   Copyright (C) 1999, 2001 Free Software Foundation, Inc.
+    This file is part of the GNU C Library.
+    Contributed by Ulrich Drepper <drepper@cygnus.com>, 1999.
+ 
+@@ -31,7 +31,7 @@
+   td_thr_events_t old_event;
+   int i;
+ 
+-  LOG (__FUNCTION__);
++  LOG ("td_thr_set_event");
+ 
+   /* Write the new value into the thread data structure.  */
+   if (ps_pdread (th->th_ta_p->ph,
+diff -urN glibc-2.2.5.orig/linuxthreads_db/td_thr_setfpregs.c glibc-2.2.5/linuxthreads_db/td_thr_setfpregs.c
+--- glibc-2.2.5.orig/linuxthreads_db/td_thr_setfpregs.c	2001-07-06 14:27:23.000000000 +0900
++++ glibc-2.2.5/linuxthreads_db/td_thr_setfpregs.c	2006-04-04 12:00:55.000000000 +0900
+@@ -26,7 +26,7 @@
+ {
+   struct _pthread_descr_struct pds;
+ 
+-  LOG (__FUNCTION__);
++  LOG ("td_thr_setfpregs");
+ 
+   /* We have to get the state and the PID for this thread.  */
+   if (ps_pdread (th->th_ta_p->ph, th->th_unique, &pds,
+diff -urN glibc-2.2.5.orig/linuxthreads_db/td_thr_setgregs.c glibc-2.2.5/linuxthreads_db/td_thr_setgregs.c
+--- glibc-2.2.5.orig/linuxthreads_db/td_thr_setgregs.c	2001-07-06 14:27:23.000000000 +0900
++++ glibc-2.2.5/linuxthreads_db/td_thr_setgregs.c	2006-04-04 12:00:55.000000000 +0900
+@@ -26,7 +26,7 @@
+ {
+   struct _pthread_descr_struct pds;
+ 
+-  LOG (__FUNCTION__);
++  LOG ("td_thr_setgregs");
+ 
+   /* We have to get the state and the PID for this thread.  */
+   if (ps_pdread (th->th_ta_p->ph, th->th_unique, &pds,
+diff -urN glibc-2.2.5.orig/linuxthreads_db/td_thr_setprio.c glibc-2.2.5/linuxthreads_db/td_thr_setprio.c
+--- glibc-2.2.5.orig/linuxthreads_db/td_thr_setprio.c	2001-07-06 14:27:23.000000000 +0900
++++ glibc-2.2.5/linuxthreads_db/td_thr_setprio.c	2006-04-04 12:00:55.000000000 +0900
+@@ -1,5 +1,5 @@
+ /* Set a thread's priority.
+-   Copyright (C) 1999 Free Software Foundation, Inc.
++   Copyright (C) 1999, 2001 Free Software Foundation, Inc.
+    This file is part of the GNU C Library.
+    Contributed by Ulrich Drepper <drepper@cygnus.com>, 1999.
+ 
+@@ -25,6 +25,6 @@
+ td_thr_setprio (const td_thrhandle_t *th, int prio)
+ {
+   /* XXX We have to figure out what has to be done.  */
+-  LOG (__FUNCTION__);
++  LOG ("td_thr_setprio");
+   return TD_OK;
+ }
+diff -urN glibc-2.2.5.orig/linuxthreads_db/td_thr_setsigpending.c glibc-2.2.5/linuxthreads_db/td_thr_setsigpending.c
+--- glibc-2.2.5.orig/linuxthreads_db/td_thr_setsigpending.c	2001-07-06 14:27:23.000000000 +0900
++++ glibc-2.2.5/linuxthreads_db/td_thr_setsigpending.c	2006-04-04 12:00:55.000000000 +0900
+@@ -1,5 +1,5 @@
+ /* Raise a signal for a thread.
+-   Copyright (C) 1999 Free Software Foundation, Inc.
++   Copyright (C) 1999, 2001 Free Software Foundation, Inc.
+    This file is part of the GNU C Library.
+    Contributed by Ulrich Drepper <drepper@cygnus.com>, 1999.
+ 
+@@ -26,6 +26,6 @@
+ 		      const sigset_t *ss)
+ {
+   /* XXX We have to figure out what has to be done.  */
+-  LOG (__FUNCTION__);
++  LOG ("td_thr_setsigpending");
+   return TD_OK;
+ }
+diff -urN glibc-2.2.5.orig/linuxthreads_db/td_thr_setxregs.c glibc-2.2.5/linuxthreads_db/td_thr_setxregs.c
+--- glibc-2.2.5.orig/linuxthreads_db/td_thr_setxregs.c	2001-07-06 14:27:23.000000000 +0900
++++ glibc-2.2.5/linuxthreads_db/td_thr_setxregs.c	2006-04-04 12:00:55.000000000 +0900
+@@ -1,5 +1,5 @@
+ /* Set a thread's extra state register set.
+-   Copyright (C) 1999 Free Software Foundation, Inc.
++   Copyright (C) 1999, 2001 Free Software Foundation, Inc.
+    This file is part of the GNU C Library.
+    Contributed by Ulrich Drepper <drepper@cygnus.com>, 1999.
+ 
+@@ -25,6 +25,6 @@
+ td_thr_setxregs (const td_thrhandle_t *ta, const void *addr)
+ {
+   /* XXX This might have to be platform specific.  */
+-  LOG (__FUNCTION__);
++  LOG ("td_thr_setxregs");
+   return TD_NOXREGS;
+ }
+diff -urN glibc-2.2.5.orig/linuxthreads_db/td_thr_sigsetmask.c glibc-2.2.5/linuxthreads_db/td_thr_sigsetmask.c
+--- glibc-2.2.5.orig/linuxthreads_db/td_thr_sigsetmask.c	2001-07-06 14:27:23.000000000 +0900
++++ glibc-2.2.5/linuxthreads_db/td_thr_sigsetmask.c	2006-04-04 12:00:55.000000000 +0900
+@@ -1,5 +1,5 @@
+ /* Set a thread's signal mask.
+-   Copyright (C) 1999 Free Software Foundation, Inc.
++   Copyright (C) 1999, 2001 Free Software Foundation, Inc.
+    This file is part of the GNU C Library.
+    Contributed by Ulrich Drepper <drepper@cygnus.com>, 1999.
+ 
+@@ -25,6 +25,6 @@
+ td_thr_sigsetmask (const td_thrhandle_t *th, const sigset_t *ss)
+ {
+   /* XXX We have to figure out what has to be done.  */
+-  LOG (__FUNCTION__);
++  LOG ("td_thr_sigsetmask");
+   return TD_OK;
+ }
+diff -urN glibc-2.2.5.orig/linuxthreads_db/td_thr_tsd.c glibc-2.2.5/linuxthreads_db/td_thr_tsd.c
+--- glibc-2.2.5.orig/linuxthreads_db/td_thr_tsd.c	2001-07-06 14:27:23.000000000 +0900
++++ glibc-2.2.5/linuxthreads_db/td_thr_tsd.c	2006-04-04 12:00:55.000000000 +0900
+@@ -1,5 +1,5 @@
+ /* Get a thread-specific data pointer for a thread.
+-   Copyright (C) 1999 Free Software Foundation, Inc.
++   Copyright (C) 1999, 2001 Free Software Foundation, Inc.
+    This file is part of the GNU C Library.
+    Contributed by Ulrich Drepper <drepper@cygnus.com>, 1999.
+ 
+@@ -33,7 +33,7 @@
+   unsigned int idx2nd;
+   void *p;
+ 
+-  LOG (__FUNCTION__);
++  LOG ("td_thr_tsd");
+ 
+   /* Get the thread descriptor.  */
+   if (ps_pdread (th->th_ta_p->ph, th->th_unique, &pds,
+diff -urN glibc-2.2.5.orig/linuxthreads_db/td_thr_validate.c glibc-2.2.5/linuxthreads_db/td_thr_validate.c
+--- glibc-2.2.5.orig/linuxthreads_db/td_thr_validate.c	2001-07-06 14:27:23.000000000 +0900
++++ glibc-2.2.5/linuxthreads_db/td_thr_validate.c	2006-04-04 12:00:55.000000000 +0900
+@@ -28,7 +28,7 @@
+   int pthread_threads_max = th->th_ta_p->pthread_threads_max;
+   int cnt;
+ 
+-  LOG (__FUNCTION__);
++  LOG ("td_thr_validate");
+ 
+   /* Now get all descriptors, one after the other.  */
+   for (cnt = 0; cnt < pthread_threads_max; ++cnt, ++handles)
+diff -urN glibc-2.2.5.orig/nss/nsswitch.c glibc-2.2.5/nss/nsswitch.c
+--- glibc-2.2.5.orig/nss/nsswitch.c	2001-07-17 17:21:36.000000000 +0900
++++ glibc-2.2.5/nss/nsswitch.c	2006-04-04 12:00:55.000000000 +0900
+@@ -178,7 +178,7 @@
+     {
+       /* This is really only for debugging.  */
+        if (NSS_STATUS_TRYAGAIN > status || status > NSS_STATUS_RETURN)
+-	 __libc_fatal ("illegal status in " __FUNCTION__);
++	 __libc_fatal ("illegal status in __nss_next");
+ 
+        if (nss_next_action (*ni, status) == NSS_ACTION_RETURN)
+ 	 return 1;
+diff -urN glibc-2.2.5.orig/stdio-common/sprintf.c glibc-2.2.5/stdio-common/sprintf.c
+--- glibc-2.2.5.orig/stdio-common/sprintf.c	2001-07-06 13:55:41.000000000 +0900
++++ glibc-2.2.5/stdio-common/sprintf.c	2006-04-04 12:00:55.000000000 +0900
+@@ -27,9 +27,7 @@
+ /* Write formatted output into S, according to the format string FORMAT.  */
+ /* VARARGS2 */
+ int
+-sprintf (s, format)
+-     char *s;
+-     const char *format;
++sprintf (char *s, const char *format, ...)
+ {
+   va_list arg;
+   int done;
+diff -urN glibc-2.2.5.orig/stdio-common/sscanf.c glibc-2.2.5/stdio-common/sscanf.c
+--- glibc-2.2.5.orig/stdio-common/sscanf.c	2001-07-06 13:55:41.000000000 +0900
++++ glibc-2.2.5/stdio-common/sscanf.c	2006-04-04 12:00:55.000000000 +0900
+@@ -1,4 +1,4 @@
+-/* Copyright (C) 1991, 1995, 1996, 1998 Free Software Foundation, Inc.
++/* Copyright (C) 1991,1995,1996,1998,2002,2003 Free Software Foundation, Inc.
+    This file is part of the GNU C Library.
+ 
+    The GNU C Library is free software; you can redistribute it and/or
+@@ -27,9 +27,7 @@
+ /* Read formatted input from S, according to the format string FORMAT.  */
+ /* VARARGS2 */
+ int
+-sscanf (s, format)
+-     const char *s;
+-     const char *format;
++sscanf (const char *s, const char *format, ...)
+ {
+   va_list arg;
+   int done;
+diff -urN glibc-2.2.5.orig/sysdeps/arm/dl-machine.h glibc-2.2.5/sysdeps/arm/dl-machine.h
+--- glibc-2.2.5.orig/sysdeps/arm/dl-machine.h	2001-09-09 06:31:40.000000000 +0900
++++ glibc-2.2.5/sysdeps/arm/dl-machine.h	2006-04-04 12:00:55.000000000 +0900
+@@ -121,14 +121,15 @@
+    and then redirect to the address it returns.  */
+    // macro for handling PIC situation....
+ #ifdef PIC
+-#define CALL_ROUTINE(x) " ldr sl,0f
+-	add 	sl, pc, sl
+-1:	ldr	r2, 2f
+-	mov	lr, pc
+-	add	pc, sl, r2
+-	b	3f
+-0:	.word	_GLOBAL_OFFSET_TABLE_ - 1b - 4
+-2:	.word " #x "(GOTOFF)
++#define CALL_ROUTINE(x) "\
++	ldr sl,0f\n\
++	add 	sl, pc, sl\n\
++1:	ldr	r2, 2f\n\
++	mov	lr, pc\n\
++	add	pc, sl, r2\n\
++	b	3f\n\
++0:	.word	_GLOBAL_OFFSET_TABLE_ - 1b - 4\n\
++2:	.word " #x "(GOTOFF)\n\
+ 3:	"
+ #else
+ #define CALL_ROUTINE(x) " bl " #x
+@@ -136,114 +137,114 @@
+ 
+ #ifndef PROF
+ # define ELF_MACHINE_RUNTIME_TRAMPOLINE asm ("\
+-	.text
+-	.globl _dl_runtime_resolve
+-	.type _dl_runtime_resolve, #function
+-	.align 2
+-_dl_runtime_resolve:
+-	@ we get called with
+-	@ 	stack[0] contains the return address from this call
+-	@	ip contains &GOT[n+3] (pointer to function)
+-	@	lr points to &GOT[2]
+-
+-	@ save almost everything; lr is already on the stack
+-	stmdb	sp!,{r0-r3,sl,fp}
+-
+-	@ prepare to call fixup()
+-	@ change &GOT[n+3] into 8*n        NOTE: reloc are 8 bytes each
+-	sub	r1, ip, lr
+-	sub	r1, r1, #4
+-	add	r1, r1, r1
+-
+-	@ get pointer to linker struct
+-	ldr	r0, [lr, #-4]
+-
+-	@ call fixup routine
+-	" CALL_ROUTINE(fixup) "
+-
+-	@ save the return
+-	mov	ip, r0
+-
+-	@ restore the stack
+-	ldmia	sp!,{r0-r3,sl,fp,lr}
+-
+-	@ jump to the newly found address
+-	mov	pc, ip
+-
+-	.size _dl_runtime_resolve, .-_dl_runtime_resolve
+-
+-	.globl _dl_runtime_profile
+-	.type _dl_runtime_profile, #function
+-	.align 2
+-_dl_runtime_profile:
+-	@ save almost everything; lr is already on the stack
+-	stmdb	sp!,{r0-r3,sl,fp}
+-
+-	@ prepare to call fixup()
+-	@ change &GOT[n+3] into 8*n        NOTE: reloc are 8 bytes each
+-	sub	r1, ip, lr
+-	sub	r1, r1, #4
+-	add	r1, r1, r1
+-
+-	@ get pointer to linker struct
+-	ldr	r0, [lr, #-4]
+-
+-	@ call profiling fixup routine
+-	" CALL_ROUTINE(profile_fixup) "
+-
+-	@ save the return
+-	mov	ip, r0
+-
+-	@ restore the stack
+-	ldmia	sp!,{r0-r3,sl,fp,lr}
+-
+-	@ jump to the newly found address
+-	mov	pc, ip
+-
+-	.size _dl_runtime_resolve, .-_dl_runtime_resolve
+-	.previous
++	.text\n\
++	.globl _dl_runtime_resolve\n\
++	.type _dl_runtime_resolve, #function\n\
++	.align 2\n\
++_dl_runtime_resolve:\n\
++	@ we get called with\n\
++	@ 	stack[0] contains the return address from this call\n\
++	@	ip contains &GOT[n+3] (pointer to function)\n\
++	@	lr points to &GOT[2]\n\
++\n\
++	@ save almost everything; lr is already on the stack\n\
++	stmdb	sp!,{r0-r3,sl,fp}\n\
++\n\
++	@ prepare to call fixup()\n\
++	@ change &GOT[n+3] into 8*n        NOTE: reloc are 8 bytes each\n\
++	sub	r1, ip, lr\n\
++	sub	r1, r1, #4\n\
++	add	r1, r1, r1\n\
++\n\
++	@ get pointer to linker struct\n\
++	ldr	r0, [lr, #-4]\n\
++\n\
++	@ call fixup routine\n\
++	" CALL_ROUTINE(fixup) "\n\
++\n\
++	@ save the return\n\
++	mov	ip, r0\n\
++\n\
++	@ restore the stack\n\
++	ldmia	sp!,{r0-r3,sl,fp,lr}\n\
++\n\
++	@ jump to the newly found address\n\
++	mov	pc, ip\n\
++\n\
++	.size _dl_runtime_resolve, .-_dl_runtime_resolve\n\
++\n\
++	.globl _dl_runtime_profile\n\
++	.type _dl_runtime_profile, #function\n\
++	.align 2\n\
++_dl_runtime_profile:\n\
++	@ save almost everything; lr is already on the stack\n\
++	stmdb	sp!,{r0-r3,sl,fp}\n\
++\n\
++	@ prepare to call fixup()\n\
++	@ change &GOT[n+3] into 8*n        NOTE: reloc are 8 bytes each\n\
++	sub	r1, ip, lr\n\
++	sub	r1, r1, #4\n\
++	add	r1, r1, r1\n\
++\n\
++	@ get pointer to linker struct\n\
++	ldr	r0, [lr, #-4]\n\
++\n\
++	@ call profiling fixup routine\n\
++	" CALL_ROUTINE(profile_fixup) "\n\
++\n\
++	@ save the return\n\
++	mov	ip, r0\n\
++\n\
++	@ restore the stack\n\
++	ldmia	sp!,{r0-r3,sl,fp,lr}\n\
++\n\
++	@ jump to the newly found address\n\
++	mov	pc, ip\n\
++\n\
++	.size _dl_runtime_resolve, .-_dl_runtime_resolve\n\
++	.previous\n\
+ ");
+ #else // PROF
+ # define ELF_MACHINE_RUNTIME_TRAMPOLINE asm ("\
+-	.text
+-	.globl _dl_runtime_resolve
+-	.globl _dl_runtime_profile
+-	.type _dl_runtime_resolve, #function
+-	.type _dl_runtime_profile, #function
+-	.align 2
+-_dl_runtime_resolve:
+-_dl_runtime_profile:
+-	@ we get called with
+-	@ 	stack[0] contains the return address from this call
+-	@	ip contains &GOT[n+3] (pointer to function)
+-	@	lr points to &GOT[2]
+-
+-	@ save almost everything; return add is already on the stack
+-	stmdb	sp!,{r0-r3,sl,fp}
+-
+-	@ prepare to call fixup()
+-	@ change &GOT[n+3] into 8*n        NOTE: reloc are 8 bytes each
+-	sub	r1, ip, lr
+-	sub	r1, r1, #4
+-	add	r1, r1, r1
+-
+-	@ get pointer to linker struct
+-	ldr	r0, [lr, #-4]
+-
+-	@ call profiling fixup routine
+-	" CALL_ROUTINE(fixup) "
+-
+-	@ save the return
+-	mov	ip, r0
+-
+-	@ restore the stack
+-	ldmia	sp!,{r0-r3,sl,fp,lr}
+-
+-	@ jump to the newly found address
+-	mov	pc, ip
+-
+-	.size _dl_runtime_profile, .-_dl_runtime_profile
+-	.previous
++	.text\n\
++	.globl _dl_runtime_resolve\n\
++	.globl _dl_runtime_profile\n\
++	.type _dl_runtime_resolve, #function\n\
++	.type _dl_runtime_profile, #function\n\
++	.align 2\n\
++_dl_runtime_resolve:\n\
++_dl_runtime_profile:\n\
++	@ we get called with\n\
++	@ 	stack[0] contains the return address from this call\n\
++	@	ip contains &GOT[n+3] (pointer to function)\n\
++	@	lr points to &GOT[2]\n\
++\n\
++	@ save almost everything; return add is already on the stack\n\
++	stmdb	sp!,{r0-r3,sl,fp}\n\
++\n\
++	@ prepare to call fixup()\n\
++	@ change &GOT[n+3] into 8*n        NOTE: reloc are 8 bytes each\n\
++	sub	r1, ip, lr\n\
++	sub	r1, r1, #4\n\
++	add	r1, r1, r1\n\
++\n\
++	@ get pointer to linker struct\n\
++	ldr	r0, [lr, #-4]\n\
++\n\
++	@ call profiling fixup routine\n\
++	" CALL_ROUTINE(fixup) "\n\
++\n\
++	@ save the return\n\
++	mov	ip, r0\n\
++\n\
++	@ restore the stack\n\
++	ldmia	sp!,{r0-r3,sl,fp,lr}\n\
++\n\
++	@ jump to the newly found address\n\
++	mov	pc, ip\n\
++\n\
++	.size _dl_runtime_profile, .-_dl_runtime_profile\n\
++	.previous\n\
+ ");
+ #endif //PROF
+ 
+@@ -256,70 +257,70 @@
+    its return value is the user program's entry point.  */
+ 
+ #define RTLD_START asm ("\
+-.text
+-.globl _start
+-.globl _dl_start_user
+-_start:
+-	@ at start time, all the args are on the stack
+-	mov	r0, sp
+-	bl	_dl_start
+-	@ returns user entry point in r0
+-_dl_start_user:
+-	mov	r6, r0
+-	@ we are PIC code, so get global offset table
+-	ldr	sl, .L_GET_GOT
+-	add	sl, pc, sl
+-.L_GOT_GOT:
+-	@ Store the highest stack address
+-	ldr	r1, .L_STACK_END
+-	ldr	r1, [sl, r1]
+-	str	sp, [r1]
+-	@ See if we were run as a command with the executable file
+-	@ name as an extra leading argument.
+-	ldr	r4, .L_SKIP_ARGS
+-	ldr	r4, [sl, r4]
+-	@ get the original arg count
+-	ldr	r1, [sp]
+-	@ subtract _dl_skip_args from it
+-	sub	r1, r1, r4
+-	@ adjust the stack pointer to skip them
+-	add	sp, sp, r4, lsl #2
+-	@ get the argv address
+-	add	r2, sp, #4
+-	@ store the new argc in the new stack location
+-	str	r1, [sp]
+-	@ compute envp
+-	add	r3, r2, r1, lsl #2
+-	add	r3, r3, #4
+-
+-	@ now we call _dl_init
+-	ldr	r0, .L_LOADED
+-	ldr	r0, [sl, r0]
+-	ldr	r0, [r0]
+-	@ call _dl_init
+-	bl	_dl_init(PLT)
+-	@ clear the startup flag
+-	ldr	r2, .L_STARTUP_FLAG
+-	ldr	r1, [sl, r2]
+-	mov	r0, #0
+-	str	r0, [r1]
+-	@ load the finalizer function
+-	ldr	r0, .L_FINI_PROC
+-	ldr	r0, [sl, r0]
+-	@ jump to the user_s entry point
+-	mov	pc, r6
+-.L_GET_GOT:
++.text\n\
++.globl _start\n\
++.globl _dl_start_user\n\
++_start:\n\
++	@ at start time, all the args are on the stack\n\
++	mov	r0, sp\n\
++	bl	_dl_start\n\
++	@ returns user entry point in r0\n\
++_dl_start_user:\n\
++	mov	r6, r0\n\
++	@ we are PIC code, so get global offset table\n\
++	ldr	sl, .L_GET_GOT\n\
++	add	sl, pc, sl\n\
++.L_GOT_GOT:\n\
++	@ Store the highest stack address\n\
++	ldr	r1, .L_STACK_END\n\
++	ldr	r1, [sl, r1]\n\
++	str	sp, [r1]\n\
++	@ See if we were run as a command with the executable file\n\
++	@ name as an extra leading argument.\n\
++	ldr	r4, .L_SKIP_ARGS\n\
++	ldr	r4, [sl, r4]\n\
++	@ get the original arg count\n\
++	ldr	r1, [sp]\n\
++	@ subtract _dl_skip_args from it\n\
++	sub	r1, r1, r4\n\
++	@ adjust the stack pointer to skip them\n\
++	add	sp, sp, r4, lsl #2\n\
++	@ get the argv address\n\
++	add	r2, sp, #4\n\
++	@ store the new argc in the new stack location\n\
++	str	r1, [sp]\n\
++	@ compute envp\n\
++	add	r3, r2, r1, lsl #2\n\
++	add	r3, r3, #4\n\
++\n\
++	@ now we call _dl_init\n\
++	ldr	r0, .L_LOADED\n\
++	ldr	r0, [sl, r0]\n\
++	ldr	r0, [r0]\n\
++	@ call _dl_init\n\
++	bl	_dl_init(PLT)\n\
++	@ clear the startup flag\n\
++	ldr	r2, .L_STARTUP_FLAG\n\
++	ldr	r1, [sl, r2]\n\
++	mov	r0, #0\n\
++	str	r0, [r1]\n\
++	@ load the finalizer function\n\
++	ldr	r0, .L_FINI_PROC\n\
++	ldr	r0, [sl, r0]\n\
++	@ jump to the user_s entry point\n\
++	mov	pc, r6\n\
++.L_GET_GOT:\n\
+ 	.word	_GLOBAL_OFFSET_TABLE_ - .L_GOT_GOT - 4	\n\
+ .L_SKIP_ARGS:					\n\
+ 	.word	_dl_skip_args(GOTOFF)		\n\
+-.L_STARTUP_FLAG:
+-	.word	_dl_starting_up(GOT)
+-.L_FINI_PROC:
+-	.word	_dl_fini(GOT)
+-.L_STACK_END:
+-	.word	__libc_stack_end(GOT)
+-.L_LOADED:
+-	.word	_dl_loaded(GOT)
++.L_STARTUP_FLAG:\n\
++	.word	_dl_starting_up(GOT)\n\
++.L_FINI_PROC:\n\
++	.word	_dl_fini(GOT)\n\
++.L_STACK_END:\n\
++	.word	__libc_stack_end(GOT)\n\
++.L_LOADED:\n\
++	.word	_dl_loaded(GOT)\n\
+ .previous\n\
+ ");
+ 
+diff -urN glibc-2.2.5.orig/sysdeps/arm/machine-gmon.h glibc-2.2.5/sysdeps/arm/machine-gmon.h
+--- glibc-2.2.5.orig/sysdeps/arm/machine-gmon.h	2001-07-06 13:55:48.000000000 +0900
++++ glibc-2.2.5/sysdeps/arm/machine-gmon.h	2006-04-04 12:00:55.000000000 +0900
+@@ -32,10 +32,8 @@
+ weak_alias (_mcount, mcount)
+ #endif
+ 
+-static void mcount_internal (u_long frompc, u_long selfpc);
+-
+ #define _MCOUNT_DECL(frompc, selfpc) \
+-static void mcount_internal (u_long frompc, u_long selfpc)
++void mcount_internal (u_long frompc, u_long selfpc)
+ 
+ /* This macro/func MUST save r0, r1 because the compiler inserts
+ 	blind calls to _mount(), ignoring the fact that _mcount may
+diff -urN glibc-2.2.5.orig/sysdeps/unix/sysv/linux/arm/errlist.c glibc-2.2.5/sysdeps/unix/sysv/linux/arm/errlist.c
+--- glibc-2.2.5.orig/sysdeps/unix/sysv/linux/arm/errlist.c	2001-07-06 13:56:13.000000000 +0900
++++ glibc-2.2.5/sysdeps/unix/sysv/linux/arm/errlist.c	2006-04-04 12:00:55.000000000 +0900
+@@ -1,4 +1,4 @@
+-/* Copyright (C) 1998, 2000 Free Software Foundation, Inc.
++/* Copyright (C) 1998, 2000, 2002 Free Software Foundation, Inc.
+    This file is part of the GNU C Library.
+ 
+    The GNU C Library is free software; you can redistribute it and/or
+@@ -38,10 +38,9 @@
+ const int __old_sys_nerr = OLD_ERRLIST_SIZE;
+ 
+ strong_alias (__old_sys_nerr, _old_sys_nerr);
+-weak_alias (__old_sys_nerr, _old_sys_nerr)
+ compat_symbol (libc, __old_sys_nerr, _sys_nerr, GLIBC_2_0);
+ compat_symbol (libc, _old_sys_nerr, sys_nerr, GLIBC_2_0);
+-weak_alias (__old_sys_errlist, _old_sys_errlist);
++strong_alias (__old_sys_errlist, _old_sys_errlist);
+ compat_symbol (libc, __old_sys_errlist, _sys_errlist, GLIBC_2_0);
+ compat_symbol (libc, _old_sys_errlist, sys_errlist, GLIBC_2_0);
+ #endif
+diff -urN glibc-2.2.5.orig/sysdeps/unix/sysv/linux/arm/ioperm.c glibc-2.2.5/sysdeps/unix/sysv/linux/arm/ioperm.c
+--- glibc-2.2.5.orig/sysdeps/unix/sysv/linux/arm/ioperm.c	2001-07-06 13:56:13.000000000 +0900
++++ glibc-2.2.5/sysdeps/unix/sysv/linux/arm/ioperm.c	2006-04-04 12:00:55.000000000 +0900
+@@ -47,6 +47,12 @@
+ #include <asm/page.h>
+ #include <sys/sysctl.h>
+ 
++/* see http://www.ussg.iu.edu/hypermail/linux/kernel/0311.0/0529.html */
++#include <linux/version.h>
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(2,4,23))
++#define CTL_BUS_ISA BUS_ISA	/* and hope it's not the one from linux/input.h */
++#endif
++
+ #define PATH_ARM_SYSTYPE	"/etc/arm_systype"
+ #define PATH_CPUINFO		"/proc/cpuinfo"
+ 
+@@ -80,7 +86,7 @@
+  * Initialize I/O system.  There are several ways to get the information
+  * we need.  Each is tried in turn until one succeeds.
+  *
+- * 1. Sysctl (CTL_BUS, BUS_ISA, ISA_*).  This is the preferred method
++ * 1. Sysctl (CTL_BUS, CTL_BUS_ISA, ISA_*).  This is the preferred method
+  *    but not all kernels support it.
+  *
+  * 2. Read the value (not the contents) of symlink PATH_ARM_SYSTYPE.
+@@ -100,8 +106,8 @@
+ {
+   char systype[256];
+   int i, n;
+-  static int iobase_name[] = { CTL_BUS, BUS_ISA, BUS_ISA_PORT_BASE };
+-  static int ioshift_name[] = { CTL_BUS, BUS_ISA, BUS_ISA_PORT_SHIFT };
++  static int iobase_name[] = { CTL_BUS, CTL_BUS_ISA, BUS_ISA_PORT_BASE };
++  static int ioshift_name[] = { CTL_BUS, CTL_BUS_ISA, BUS_ISA_PORT_SHIFT };
+   size_t len = sizeof(io.base);
+ 
+   if (! sysctl (iobase_name, 3, &io.io_base, &len, NULL, 0)
+diff -urN glibc-2.2.5.orig/sysdeps/unix/sysv/linux/arm/sysdep.h glibc-2.2.5/sysdeps/unix/sysv/linux/arm/sysdep.h
+--- glibc-2.2.5.orig/sysdeps/unix/sysv/linux/arm/sysdep.h	2001-07-06 13:56:13.000000000 +0900
++++ glibc-2.2.5/sysdeps/unix/sysv/linux/arm/sysdep.h	2006-04-04 12:00:55.000000000 +0900
+@@ -131,7 +131,7 @@
+        asm volatile ("swi	%1	@ syscall " #name	\
+ 		     : "=r" (_a1)				\
+ 		     : "i" (SYS_ify(name)) ASM_ARGS_##nr	\
+-		     : "a1", "memory");				\
++		     : "memory");				\
+        _sys_result = _a1;					\
+      }								\
+      if (_sys_result >= (unsigned int) -4095)			\
+diff -urN glibc-2.2.5.orig/sysdeps/unix/sysv/linux/configure glibc-2.2.5/sysdeps/unix/sysv/linux/configure
+--- glibc-2.2.5.orig/sysdeps/unix/sysv/linux/configure	2002-01-21 12:27:33.000000000 +0900
++++ glibc-2.2.5/sysdeps/unix/sysv/linux/configure	2006-04-04 12:00:56.000000000 +0900
+@@ -56,6 +56,10 @@
+     arch_minimum_kernel=2.1.100
+     libc_cv_gcc_unwind_find_fde=yes
+     ;;
++  arm*)
++    libc_cv_gcc_unwind_find_fde=yes
++    arch_minimum_kernel=2.0.10
++    ;;
+   i386*)
+     libc_cv_gcc_unwind_find_fde=yes
+     arch_minimum_kernel=2.0.10

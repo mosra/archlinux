@@ -1,0 +1,52 @@
+#!/bin/bash
+# Contributor: Vladimír Vondruš <mosra@centrum.cz>
+pkgname=gp2xsdk-gcc-prebuild
+pkgver=3.4.6
+pkgrel=1
+pkgdesc="Official GamePark SDK for GP2X development - gcc-prebuild"
+arch=('i686' 'x86_64')
+url="http://wiki.gp2x.org"
+license=('GPL')
+depends=(gp2xsdk-binutils=2.16.1)
+makedepends=()
+optdepends=()
+options=(
+    !strip
+)
+
+source=(
+    "ftp://ftp.gnu.org/gnu/gcc/gcc-$pkgver/gcc-core-$pkgver.tar.bz2"
+    "http://kaizo.org/misc/gp2x/1.4.0.tar.gz"
+    "gcc-prebuild-$pkgver.patch"
+)
+md5sums=('5324ace5145b12afd9ca867af7ec084d'
+         '0f882a2d131f89abbe4277317231e83e'
+         'ba7d1224586bc17ee2a37ad969fac286')
+
+build() {
+    _target='arm-gp2x-linux'
+
+    cd "$srcdir/1.4.0/include"
+    rm -f asm
+    ln -s "asm-arm" "asm" || return 1
+    cd asm
+    rm -f arch proc
+    ln -s "arch-mmsp2" "arch" || return 1
+    ln -s "proc-armv" "proc" || return 1
+
+    unset CFLAGS
+    unset CXXFLAGS
+
+    cd "$srcdir/gcc-$pkgver"
+    patch -p1 < "$startdir/gcc-prebuild-$pkgver.patch" || return 1
+
+    ./configure --prefix=/usr --includedir=/usr/$_target/include --target=$_target --program-prefix=$_target- --with-cpu=arm9tdmi --disable-threads --disable-shared --disable-nls --enable-languages="c" --with-headers=$srcdir/1.4.0/include --without-fp --with-softfloat-support=internal || return 1
+    make || return 1
+    make DESTDIR=$pkgdir/ install || return 1
+
+    rm -rf $pkgdir/usr/info $pkgdir/usr/man $pkgdir/usr/lib/libiberty.a
+
+    # Půjčeno z /usr/bin/makepkg
+    /usr/bin/arm-gp2x-linux-strip --strip-debug \
+        $pkgdir/usr/lib/gcc/arm-gp2x-linux/3.4.6/*.a
+}
