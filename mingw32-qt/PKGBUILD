@@ -1,6 +1,6 @@
 # Contributor: Vladimír Vondruš <mosra@centrum.cz>
 pkgname=mingw32-qt
-pkgver=4.5.2
+pkgver=4.5.3
 pkgrel=1
 pkgdesc="A cross-platform application and UI framework (mingw32 version)"
 arch=('i686' 'x86_64')
@@ -10,7 +10,7 @@ groups=()
 depends=('mingw32-runtime')
 makedepends=('p7zip' 'unzip')
 
-_exe='qt-sdk-win-opensource-2009.03.1.exe'
+_exe='qt-sdk-win-opensource-2009.04.exe'
 _zip="qt-win-opensource-src-${pkgver}"
 
 source=("http://get.qt.nokia.com/qtsdk/${_exe}"
@@ -19,8 +19,8 @@ source=("http://get.qt.nokia.com/qtsdk/${_exe}"
         "qmake.conf")
 noextract=("${_exe}"
            "${_zip}.zip")
-md5sums=('324413aab9deb49b561911676b6fae54'
-         '05d3d3448218acc72bd7a5bbfae9312a'
+md5sums=('616e460df1297917f84b4585986f7b48'
+         '81ca235e0da2728f948ca36236f9ee45'
          '5686d930bfc73c5d996389b520f27a15'
          'ed087b8b93a75d21e23b1c0bcbf15603')
 
