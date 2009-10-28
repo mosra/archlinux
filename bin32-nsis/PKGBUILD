@@ -1,0 +1,37 @@
+# Contributor: Vladimír Vondruš
+pkgname=bin32-nsis
+pkgver=2.45
+pkgrel=1
+pkgdesc="A professional open source system to create Windows installers"
+arch=('x86_64')
+url="http://nsis.sourceforge.net"
+license=('http://nsis.sourceforge.net/License')
+groups=()
+makedepends=('unzip')
+depends=('mingw32-runtime' 'lib32-glibc')
+provides=('nsis')
+conflicts=('nsis')
+source=(
+    http://downloads.sourceforge.net/project/nsis/NSIS%202/2.45/nsis-2.45.zip
+    nsis-$pkgver-$pkgrel-i686.pkg.tar.gz # Package compiled on Arch i686
+)
+noextract=(nsis-$pkgver.zip)
+md5sums=('8fb39ec61b003653968c0f1c6b6dc73f'
+         '124a9c9d4bdf2fc5b55a62d4cbc8da64')
+
+build() {
+    cd "$srcdir"
+
+    mv usr $pkgdir/
+
+    # Replacing non-functional execs / DLLs from original ZIP packgae
+    unzip nsis-$pkgver.zip > /dev/null
+
+    # Replace UI execs
+    cp nsis-$pkgver/Contrib/UIs/* \
+        $pkgdir/usr/i486-mingw32/share/nsis/Contrib/UIs || return 1
+
+    # Replace Plugin dlls
+    cp nsis-$pkgver/Plugins/* \
+        $pkgdir/usr/i486-mingw32/share/nsis/Plugins || return 1
+}
