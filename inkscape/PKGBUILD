@@ -1,0 +1,40 @@
+# $Id: PKGBUILD 55491 2009-10-13 08:52:01Z jgc $
+# Maintainer: tobias <tobias@archlinux.org>
+# Contributor: Tobias Kieslich <tobias@justdreams.de>
+# Contributor: mosra <mosra@centrum.cz>
+
+pkgname=inkscape
+pkgver=0.47
+pkgrel=1
+pkgdesc="A vector-based drawing program - svg compliant"
+url="http://inkscape.sourceforge.net/"
+arch=('i686' 'x86_64')
+license=('GPL' 'LGPL')
+depends=('gtkmm>=2.18.2' 'gc>=7.1' 'desktop-file-utils' 'libxslt>=1.1.24' 'perl>=5.10.1' 'pyxml' 'openssl>=0.9.8k' 'lcms>=1.18' 'gtkspell>=2.0.15' 'poppler-glib>=0.12.2' 'imagemagick>=6.5.6.1' 'popt' 'python>=2.6' 'gnome-vfs>=2.24.2' 'libjpeg>=7')
+makedepends=('intltool' 'pkgconfig' 'boost')
+options=('!libtool')
+install=inkscape.install
+source=(
+    http://downloads.sourceforge.net/sourceforge/${pkgname}/${pkgname}-${pkgver}.tar.gz
+    http://launchpadlibrarian.net/36057611/inkscape-poppler-0.12.2.patch
+)
+md5sums=('916c85b501bcfb0ae61fcf7318f36348'
+         '4b4867ad0aac2f9683e4dd7c9fd9a0e9')
+
+build() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+
+  patch -p1 < ../inkscape-poppler-0.12.2.patch || return 1
+
+  # TODO: --enable-inkboard and --width-libwpg are not recongized!
+  ./configure --prefix=/usr \
+    --enable-inkboard \
+    --enable-lcms \
+    --with-xft \
+    --with-python \
+    --with-perl \
+    --with-gnome-vfs \
+    --with-libwpg || return 1
+  make || return 1
+  make DESTDIR="${pkgdir}" install || return 1
+}
