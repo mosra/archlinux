@@ -14,5 +14,7 @@ build() {
 
   gcc speedcontrol.c -o speedcontrol
 
-  install -m755 -s -D speedcontrol "$pkgdir/usr/bin/speedcontrol"
+  # Setuid to make sure it will work
+  install -m4755 -s -D speedcontrol "$pkgdir/usr/bin/speedcontrol"
+
 }
