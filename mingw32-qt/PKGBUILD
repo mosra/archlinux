@@ -1,4 +1,4 @@
-# Contributor: Vladimír Vondruš <mosra@centrum.cz>
+# Contributor: mosra <mosra@centrum.cz>
 pkgname=mingw32-qt
 pkgver=4.5.3
 pkgrel=1
@@ -32,32 +32,35 @@ build() {
     # Overwriting some duplicate files, so Yes on all
     7z x -y ${_exe} > /dev/null
 
-    # In the installer are missing some header files (they are automagically
+    # There are missing some header files in the installer (they are automagically
     # created during installation), so we must take includes from ZIP sources.
     msg "Extracting data from zip source..."
     unzip ${_zip}.zip > /dev/null
 
     rootdir=${pkgdir}/usr/i486-mingw32/
 
+    # Copied only production DLLs and libs, debug libs are huge too much.
+
     msg "Copying DLLs..."
-    mkdir -p ${rootdir}/bin
+    mkdir -p "${rootdir}/bin"
     rm -f \$OUTDIR/qt/qt/bin/*d4.dll
     cp \$OUTDIR/qt/qt/bin/*.dll ${rootdir}/bin/ || return 1
 
     msg "Copying plugins..."
-    cp -r \$OUTDIR/qt/qt/plugins ${rootdir}/bin/ || return 1
+    mkdir -p "${rootdir}/bin/qt-plugins"
+    cp -r \$OUTDIR/qt/qt/plugins/* ${rootdir}/bin/qt-plugins/ || return 1
 
     msg "Copying static libs..."
-    mkdir -p ${rootdir}/lib
+    mkdir -p "${rootdir}/lib"
     rm -f \$OUTDIR/qt/qt/bin/*d4.a
-    cp \$OUTDIR/qt/qt/lib/*.a ${rootdir}/lib/ || return 1
+    cp \$OUTDIR/qt/qt/lib/*.a "${rootdir}/lib/" || return 1
 
     msg "Copying mkspecs..."
-    cp -r \$OUTDIR/qt/qt/mkspecs ${rootdir} || return 1
+    cp -r \$OUTDIR/qt/qt/mkspecs "${rootdir}" || return 1
 
     msg "Copying includes..."
-    mkdir -p ${rootdir}/include
-    cp -r ${_zip}/include ${rootdir} || return 1
+    mkdir -p "${rootdir}/include"
+    cp -r ${_zip}/include "${rootdir}" || return 1
     # qconfig.h is missing in sources, so copy from SDK
     cp \$OUTDIR/qt/qt/include/QtCore/qconfig.h ${rootdir}/include/QtCore || return 1
     # From sources copy only *.h files (needed by includes)
