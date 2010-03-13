@@ -1,0 +1,46 @@
+# Contributor: mosra <mosra@centrum.cz>
+# Derived from kdevelop-extra-plugins-php-svn
+
+pkgname=(kdevelop-extra-plugins-php-doc-svn)
+pkgver=1086002
+pkgrel=1
+pkgdesc="PHP documentation plugin for KDevelop - SVN build"
+arch=('i686' 'x86_64')
+url="http://www.kdevelop.org/"
+license=('GPL')
+groups=('kde' 'kdevelop-extra-plugins')
+depends=('kdevplatform-svn')
+optdepends=('kdevelop-svn')
+makedepends=('cmake' 'automoc4' 'subversion')
+provides=('kdevelop-php-docs')
+conflicts=('kdevelop-php-docs')
+source=()
+md5sums=()
+
+_svntrunk=svn://anonsvn.kde.org/home/kde/trunk/extragear/sdk/kdevelop-plugins/php-docs/
+_svnmod=kdevelop-php-docs-svn
+
+build() {
+    cd ${srcdir}
+
+    if [ -d ${_svnmod}/.svn ]; then
+        (cd ${_svnmod} && svn up -r ${pkgver})
+    else
+        svn co ${_svntrunk} --config-dir ./ -r ${pkgver} ${_svnmod}
+    fi
+
+    # Rebuilding frequently, comment this out
+    [ -d build ] && rm -rf build
+
+    mkdir -p build
+    cd build
+
+    cmake ../${_svnmod} \
+        -DCMAKE_SKIP_RPATH=ON \
+        -DCMAKE_BUILD_TYPE=DEBUG \
+        -DCMAKE_{SHARED,MODULE,EXE}_LINKER_FLAGS='-Wl,--no-undefined -Wl,--as-needed' \
+        -DCMAKE_INSTALL_PREFIX=/usr || return 1
+
+    make || return 1
+    make DESTDIR=${pkgdir} install || return 1
+}
