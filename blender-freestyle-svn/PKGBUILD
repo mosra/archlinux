@@ -2,7 +2,7 @@
 # Contributor: mosra <mosra@centrum.cz>
 # PKGBUILD stolen from blender-svn
 pkgname=blender-freestyle-svn
-pkgver=25618
+pkgver=26980
 pkgrel=1
 pkgdesc="SVN version of Blender (branch with FreeStyle edge rendering)"
 arch=('i686' 'x86_64')
