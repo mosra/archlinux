@@ -1,3 +1,0 @@
-#!/bin/sh
-
-qmake -win32 -spec win32-x-g++ $@
