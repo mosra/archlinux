@@ -1,0 +1,27 @@
+# Author: mosra <mosra@centrum.cz>
+pkgname=nosudo
+pkgver=0.1
+pkgrel=1
+pkgdesc="Sudo with root password. Converts sudo calls to 'su -c'"
+arch=('any')
+url=""
+license=('GPL')
+groups=()
+depends=()
+makedepends=()
+optdepends=()
+provides=('sudo')
+conflicts=('sudo')
+replaces=()
+backup=()
+options=()
+install=
+source=('sudo.sh')
+noextract=()
+md5sums=('36efe20bd1f0277ad0a538be19a2de99')
+
+build() {
+  cd "$srcdir"
+
+  install -m 755 -D -T sudo.sh "$pkgdir/usr/bin/sudo"
+}
