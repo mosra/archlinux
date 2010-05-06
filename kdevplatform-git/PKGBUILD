@@ -1,0 +1,45 @@
+# Contributor: Jakub Schmidtke <sjakub-at-gmail-dot-com>
+# Contributor: mosra <mosra@centrum.cz>
+
+pkgname=kdevplatform-git
+pkgver=20100505
+pkgrel=1
+pkgdesc="A C/C++ development platform for KDE - GIT build"
+arch=('i686' 'x86_64')
+url="http://www.kdevelop.org/"
+license=('GPL')
+depends=('kdelibs' 'boost' 'commoncpp2')
+makedepends=('cmake' 'automoc4' 'git')
+provides=('kdevplatform' 'kdevplatform-svn')
+conflicts=('kdevplatform')
+replaces=('kdevplatform-svn')
+source=()
+md5sums=()
+
+_gitroot="git://gitorious.org/kdevelop/kdevplatform.git"
+_gitname="kdevplatform"
+
+build() {
+    cd "$srcdir"
+    msg "Connecting to GIT server...."
+
+    if [ -d $_gitname ] ; then
+        cd $_gitname && git pull origin
+        msg "The local files are updated."
+    else
+        git clone $_gitroot $_gitname
+    fi
+
+    msg "GIT checkout done or server timeout"
+    msg "Starting make..."
+
+    mkdir -p "$srcdir/build"
+    cd "$srcdir/build"
+
+    cmake ../${_gitname} \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DCMAKE_BUILD_TYPE=RELWITHDEBINFO
+
+    make || return 1
+    make DESTDIR=${pkgdir} install || return 1
+}
