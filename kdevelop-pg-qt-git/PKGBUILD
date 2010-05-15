@@ -1,0 +1,44 @@
+# Contributor: mosra <mosra@centrum.cz>
+
+pkgname=kdevelop-pg-qt-git
+pkgver=20100515
+pkgrel=1
+pkgdesc="KDevelop Parser Generator, a LL(1) parser generator used mainly by KDevelop language plugins"
+arch=('i686' 'x86_64')
+url="http://www.kdevelop.org"
+license=('GPL')
+depends=('kdelibs')
+makedepends=('cmake' 'automoc4' 'git')
+provides=('kdevelop-pg-qt-svn')
+conflicts=()
+replaces=('kdevelop-pg-qt-svn')
+source=()
+md5sums=()
+
+_gitroot="git://gitorious.org/kdevelop/kdevelop-pg-qt.git"
+_gitname="kdevelop-pg-qt"
+
+build() {
+    cd "$srcdir"
+    msg "Connecting to GIT server...."
+
+    if [ -d $_gitname ] ; then
+        cd $_gitname && git pull origin
+        msg "The local files are updated."
+    else
+        git clone $_gitroot $_gitname
+    fi
+
+    msg "GIT checkout done or server timeout"
+    msg "Starting make..."
+
+    mkdir -p "$srcdir/build"
+    cd "$srcdir/build"
+
+    cmake ../${_gitname} \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DCMAKE_BUILD_TYPE=RELWITHDEBINFO
+
+    make || return 1
+    make DESTDIR=${pkgdir} install || return 1
+}
