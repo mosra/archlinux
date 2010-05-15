@@ -9,6 +9,7 @@ url="http://gitorious.org/svn2git"
 license=('GPLv2')
 groups=()
 depends=('subversion' 'qt' 'git')
+optdepends=('svneverever-git: for collecting path entries across SVN history')
 makedepends=()
 source=()
 md5sums=()
