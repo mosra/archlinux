@@ -2,7 +2,7 @@
 # Contributor: mosra <mosra@centrum.cz>
 
 pkgname=(kdevelop-extra-plugins-php-git)
-pkgver=20100506
+pkgver=20100515
 pkgrel=1
 pkgdesc="A PHP plugin for KDevelop development environment for KDE - GIT build"
 arch=('i686' 'x86_64')
@@ -11,15 +11,13 @@ license=('GPL')
 groups=('kde' 'kdevelop-extra-plugins')
 depends=('kdevplatform-git')
 optdepends=('kdevelop-git')
-makedepends=('cmake' 'automoc4' 'git' 'subversion')
+makedepends=('cmake' 'automoc4' 'git' 'kdevelop-pg-qt-git')
 provides=('kdevelop-php' 'kdevelop-extra-plugins-php-svn')
 conflicts=('kdevelop-php')
 replaces=('kdevelop-extra-plugins-php-svn')
 source=()
 md5sums=()
 
-_svntrunk='svn://anonsvn.kde.org/home/kde/trunk/playground/devtools/kdevelop-pg-qt'
-_svnmod='include'
 _gitroot="git://gitorious.org/kdevelop/php.git"
 _gitname="php"
 
@@ -28,32 +26,13 @@ build() {
     msg "Connecting to GIT server...."
 
     if [ -d $_gitname ] ; then
-        cd $_gitname
-
-        # Revert patched CMakeLists.txt for clean git pull
-        git checkout -- CMakeLists.txt
-
-        git pull origin
+        cd $_gitname && git pull origin
         msg "The local files are updated."
     else
         git clone $_gitroot $_gitname
     fi
 
     msg "GIT checkout done or server timeout"
-
-    # Headers for kdevelop-pg-qt are in SVN
-    cd "$srcdir"
-    if [ -d $_svnmod/.svn ]; then
-        msg "Updating headers from SVN .."
-        (cd $_svnmod && svn up)
-    else
-        msg "Fetching headers from SVN .."
-        svn co $_svntrunk/$_svnmod $_svnmod
-    fi
-
-    # Change include dir for kdevelop-pg-qt to dir where are headers from SVN
-    sed -i "s:\${CMAKE_CURRENT_SOURCE_DIR}/parser/generated/kdevelop-pg-qt:\"${srcdir}/${_svnmod}\":" "${srcdir}/${_gitname}/CMakeLists.txt"
-
     msg "Starting make..."
 
     mkdir -p "$srcdir/build"
