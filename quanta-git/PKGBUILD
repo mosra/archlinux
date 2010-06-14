@@ -8,14 +8,14 @@ pkgdesc="An IDE for Web Development based on the KDevelop Platform"
 arch=('i686' 'x86_64')
 url="http://quanta.kdewebdev.org/"
 license=('GPL')
-depends=('kdevplatform')
-optdepends=('qjson' 'kdevelop-pg-qt')
+depends=('kdevplatform' 'qjson')
+optdepends=('kdevelop-pg-qt')
 makedepends=('cmake' 'automoc4' 'git' 'flex')
 provides=('quanta')
 replaces=('quanta' 'quanta-svn')
 conflicts=('quanta' 'quanta-svn' 'kdevelop-extra-plugins-executebrowser-svn' 'kdevelop-extra-plugins-executescript-svn' 'kdevelop-extra-plugins-xdebug-svn')
 source=('cmakelists.patch')
-md5sums=('36bc516b06f6144c41b3d1446118ccb0')
+md5sums=('df6bedbacc751667d452e310df1c17dd')
 
 _gitroot="git://gitorious.org/kdevelop/quanta.git"
 _gitname="quanta"
@@ -29,7 +29,8 @@ build() {
         cd ${_gitname}
 
         # Revert patched files
-        git checkout -- languages/xml/language/duchain/CMakeLists.txt
+        git checkout -- languages/xml/language/duchain/CMakeLists.txt \
+            debuggers/crossfire/CMakeLists.txt
 
         git pull origin
         msg "The local files are updated."
@@ -47,11 +48,9 @@ build() {
     mkdir -p "${srcdir}/build"
     cd "${srcdir}/build"
 
-    # QJSON build is broken atm
     cmake ../${_gitname} \
         -DCMAKE_INSTALL_PREFIX=/usr \
-        -DCMAKE_BUILD_TYPE=RELEASE \
-        -DWITH_QJSON=0
+        -DCMAKE_BUILD_TYPE=RELEASE
 
     make || return 1
 }
@@ -59,6 +58,4 @@ build() {
 package() {
     cd "${srcdir}/build"
     make DESTDIR=${pkgdir} install || return 1
-
-    rm -rf "${srcdir}/build"
 }
