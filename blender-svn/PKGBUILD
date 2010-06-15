@@ -47,7 +47,7 @@ build() {
   unset _CFLAGS
   unset _CXXFLAGS
   ##########
-  python scons/scons.py || return 1
+  python scons/scons.py $MAKEFLAGS || return 1
   ##########
   # now we will compile some plugins
   cp -af "$srcdir"/install/linux2/plugins/* \
