@@ -1,0 +1,13 @@
+Index: source/creator/SConscript
+===================================================================
+--- source/creator/SConscript	(revision 29464)
++++ source/creator/SConscript	(working copy)
+@@ -37,7 +37,7 @@
+ 	defs.append('DISABLE_PYTHON')
+ 
+ if env['WITH_BF_FHS']: # /usr -> /usr/share/blender/2.5
+-	defs.append('BLENDERPATH=\\"' + os.path.join(env['BF_INSTALLDIR'], 'share', 'blender', env['BF_VERSION']) + '\\"')
++	defs.append('BLENDERPATH=\\"' + os.path.join('/usr', 'share', 'blender', env['BF_VERSION']) + '\\"')
+ 	
+ if env['BF_BUILDINFO']:
+ 	defs.append('BUILD_DATE')

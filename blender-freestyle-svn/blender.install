@@ -11,9 +11,6 @@ Features includes:
 	- verse support
 	- some aditional sequence and texture plugins
 	  are accesible from /usr/share/blender/plugins
-IMPORTANT NOTE:
-    please run "blender-update-scripts" before running blender
-    otherwise scripts will not be available
 
 EOF
   echo "update desktop mime database..."
@@ -22,13 +19,6 @@ EOF
 }
 
 post_upgrade() {
-  cat << EOF
-
-IMPORTANT NOTE:
-    please run "blender-update-scripts" before running blender
-    otherwise scripts will not be available
-
-EOF
   gtk-update-icon-cache -f /usr/share/icons/hicolor/
 }
 

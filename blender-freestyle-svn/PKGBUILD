@@ -1,22 +1,24 @@
 # Contributor: Lukas Jirkovsky <l.jirkovsky@gmail.com>
+# Contributor: Mikael Eriksson (miffe)
 # Contributor: mosra <mosra@centrum.cz>
 # PKGBUILD stolen from blender-svn
 pkgname=blender-freestyle-svn
-pkgver=26980
+pkgver=29411
 pkgrel=1
 pkgdesc="SVN version of Blender (branch with FreeStyle edge rendering)"
 arch=('i686' 'x86_64')
 url="http://blender.org/"
-depends=('libgl' 'mesa' 'libjpeg' 'libpng' 'openexr' 'gettext' 'python3' 'sdl' 'desktop-file-utils' 'libsamplerate' 'hicolor-icon-theme')
+depends=('libpng' 'libgl' 'mesa' 'openexr' 'gettext' 'python3' 'desktop-file-utils' 'libsamplerate'
+         'hicolor-icon-theme' 'ffmpeg' 'fftw' 'lcms')
 makedepends=('python' 'subversion' 'yasm')
 provides=('blender')
 conflicts=('blender')
 license=('GPL')
 install=blender.install
-source=(blender.desktop blender.config blender-update-scripts)
+source=(blender.desktop blender.config use_usr.diff)
 md5sums=('9acbd59bdf4cda404e1c59f343372fd9'
-         'ae80638d01adab9d1891f04cb7273331'
-         '05d8a9b8a293ba3bb752466540bf6b14')
+         '322a93c36fc12c137f0dac0bb347beca'
+         '8de5594267ff41363cb557103ea70f2a')
 
 _svntrunk="https://svn.blender.org/svnroot/bf-blender/branches/soc-2008-mxcurioni/"
 _svnmod="blender"
@@ -41,46 +43,39 @@ build() {
   cp "$srcdir"/blender.config user-config.py
   _CFLAGS=`echo $CFLAGS | sed -e "s/\ -O.//" -e "s/^/'/" -e "s/\ /','/g" -e "s/$/'/"`
   _CXXFLAGS=`echo $CXXFLAGS | sed -e "s/\ -O.//" -e "s/^/'/" -e "s/\ /','/g" -e "s/$/'/"`
+  _NUMJOBS=`echo -n $MAKEFLAGS | sed 's/.*-j\([1-9][0-9]*\).*/\1/g'`
+  _NUMJOBS=`[ $_NUMJOBS ] && echo -n $_NUMJOBS || echo -n 1`
   sed "s|^REL_CFLAGS\ =\ \['.*'\]|REL_CFLAGS\ =\ \['`echo -n $CFLAGS | sed 's/.*\(-O[s,0-4]\).*/\1/g'`'\]|" -i user-config.py
   sed "s|^REL_CCFLAGS\ =\ \['.*'\]|REL_CCFLAGS\ =\ \['`echo -n $CXXFLAGS | sed 's/.*\(-O[s,0-4]\).*/\1/g'`'\]|" -i user-config.py
   sed "s|^CCFLAGS\ =\ \[|CCFLAGS\ =\ \[$_CFLAGS,|" -i user-config.py
   sed "s|^CXXFLAGS\ =\ \[|CXXFLAGS\ =\ \[$_CXXFLAGS,|" -i user-config.py
+  sed "s|^BF_NUMJOBS\ =\ [1-9][0-9]*|BF_NUMJOBS\ =\ $_NUMJOBS|" -i user-config.py
   unset _CFLAGS
   unset _CXXFLAGS
+
+  # correct the BLENDERPATH variable
+  # see http://wiki.blender.org/index.php/Dev:2.5/Source/Installation/Unix_FHS
+  patch -Np0 < "$srcdir"/use_usr.diff
   ##########
   python scons/scons.py || return 1
   ##########
   # now we will compile some plugins
-  cp -af "$srcdir"/install/linux2/plugins/* \
+  mv -f "$srcdir"/install/linux2/share/blender/*/plugins/* \
     "$srcdir"/$_svnmod/source/blender/blenpluginapi/
   cd "$srcdir"/$_svnmod/source/blender/blenpluginapi
   chmod 755 bmake
   make
   ###########
   # And...Install!!!
-  cd "$srcdir"/install/linux2
-  install -D -m755 blender "$pkgdir"/usr/bin/blender
-  install -D -m755 "$srcdir"/blender-update-scripts "$pkgdir"/usr/bin/blender-update-scripts
+  install -d -m755 "$pkgdir"/usr
+  cp -a "$srcdir"/install/linux2/* "$pkgdir"/usr/
 
-  install -d -m755 "$pkgdir"/usr/share/$_svnmod
-  cp -R .blender/locale "$pkgdir"/usr/share/
-  cp -R .blender "$pkgdir"/usr/share/$_svnmod/
-  install -d -m755 "$pkgdir"/usr/share/$_svnmod/plugins/{sequence,texture}
+  install -d -m755 "$pkgdir"/usr/share/blender/*/plugins/{sequence,texture}
   cp "$srcdir"/$_svnmod/source/blender/blenpluginapi/sequence/*.so \
-    "$pkgdir"/usr/share/$_svnmod/plugins/sequence/
+    "$pkgdir"/usr/share/blender/*/plugins/sequence/
   cp "$srcdir"/$_svnmod/source/blender/blenpluginapi/texture/*.so \
-    "$pkgdir"/usr/share/$_svnmod/plugins/texture/
+    "$pkgdir"/usr/share/blender/*/plugins/texture/
 
   install -D -m644 "$srcdir"/blender.desktop \
     "$pkgdir"/usr/share/applications/blender.desktop
-
-  # install icons
-  cd icons
-  for DIR in *; do
-    if [ $DIR != "scalable" ]; then
-      install -D -m644 $DIR/blender.png "$pkgdir"/usr/share/icons/hicolor/$DIR/blender.png
-    else
-      install -D -m644 $DIR/blender.svg "$pkgdir"/usr/share/icons/hicolor/$DIR/blender.svg
-    fi
-  done
 }
