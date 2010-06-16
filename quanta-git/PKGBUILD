@@ -2,14 +2,13 @@
 # Contributor: mosra <mosra@centrum.cz>
 
 pkgname=quanta-git
-pkgver=20100614
+pkgver=20100616
 pkgrel=1
 pkgdesc="An IDE for Web Development based on the KDevelop Platform"
 arch=('i686' 'x86_64')
 url="http://quanta.kdewebdev.org/"
 license=('GPL')
-depends=('kdevplatform' 'qjson')
-optdepends=('kdevelop-pg-qt')
+depends=('kdevplatform-git' 'qjson' 'kdevelop-pg-qt-git')
 makedepends=('cmake' 'automoc4' 'git' 'flex')
 provides=('quanta')
 replaces=('quanta' 'quanta-svn')
