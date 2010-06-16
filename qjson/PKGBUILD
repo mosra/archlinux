@@ -1,8 +1,9 @@
 # Contributor: Andrea Scarpino <andrea@archlinux.org>
+# Contributor: mosra <mosra@centrum.cz>
 
 pkgname=qjson
 pkgver=0.7.1
-pkgrel=1
+pkgrel=2
 pkgdesc="A qt-based library that maps JSON data to QVariant objects."
 arch=('i686' 'x86_64')
 license=('GPL')
@@ -13,11 +14,20 @@ source=("http://downloads.sourceforge.net/${pkgname}/${pkgname}-${pkgver}.tar.bz
 md5sums=('5a833ad606c164ed8aa69f0873366ace')
 
 build() {
-  cd $srcdir
-  mkdir build
-  cd build
-  cmake ../${pkgname} \
-    -DCMAKE_INSTALL_PREFIX=/usr
-  make || return 1
-  make DESTDIR=${pkgdir} install || return 1
+
+    # Fix place for CMake modules
+    sed -i 's#/share/apps/cmake/modules#/share/cmake-2.8/Modules#' \
+        "$srcdir/qjson/CMakeLists.txt"
+
+    mkdir -p "$srcdir/build"
+    cd "$srcdir/build"
+
+    cmake ../${pkgname} \
+        -DCMAKE_INSTALL_PREFIX=/usr
+    make || return 1
+}
+
+package() {
+    cd "$srcdir/build"
+    make DESTDIR=${pkgdir} install || return 1
 }
