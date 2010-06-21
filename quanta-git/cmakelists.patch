@@ -1,15 +1,3 @@
-diff --git a/debuggers/crossfire/CMakeLists.txt b/debuggers/crossfire/CMakeLists.txt
-index 52acee6..37f74b3 100644
---- a/debuggers/crossfire/CMakeLists.txt
-+++ b/debuggers/crossfire/CMakeLists.txt
-@@ -54,6 +54,7 @@ kde4_add_unit_test(connectiontest ${connectiontest_SRCS} ${kdevcrossfirecore_PAR
- target_link_libraries(connectiontest
-     ${QT_QTTEST_LIBRARY}
-     ${KDEVPLATFORM_DEBUGGER_LIBRARIES}
-+    ${KDEVPLATFORM_OUTPUTVIEW_LIBRARIES}
-     ${QJSON_LIBRARIES}
- )
- 
 diff --git a/languages/xml/language/duchain/CMakeLists.txt b/languages/xml/language/duchain/CMakeLists.txt
 index 164ed3b..5aeb29c 100644
 --- a/languages/xml/language/duchain/CMakeLists.txt

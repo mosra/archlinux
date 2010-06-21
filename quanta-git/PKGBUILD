@@ -2,7 +2,7 @@
 # Contributor: mosra <mosra@centrum.cz>
 
 pkgname=quanta-git
-pkgver=20100618
+pkgver=20100621
 pkgrel=1
 pkgdesc="An IDE for Web Development based on the KDevelop Platform"
 arch=('i686' 'x86_64')
@@ -15,7 +15,7 @@ provides=('quanta')
 replaces=('quanta' 'quanta-svn')
 conflicts=('quanta' 'quanta-svn' 'kdevelop-extra-plugins-executebrowser-svn' 'kdevelop-extra-plugins-executescript-svn' 'kdevelop-extra-plugins-xdebug-svn')
 source=('cmakelists.patch')
-md5sums=('df6bedbacc751667d452e310df1c17dd')
+md5sums=('36bc516b06f6144c41b3d1446118ccb0')
 
 _gitroot="git://gitorious.org/kdevelop/quanta.git"
 _gitname="quanta"
