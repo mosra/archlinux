@@ -2,7 +2,7 @@
 # Contributor: mosra <mosra@centrum.cz>
 
 pkgname=quanta-git
-pkgver=20100621
+pkgver=20100724
 pkgrel=1
 pkgdesc="An IDE for Web Development based on the KDevelop Platform"
 arch=('i686' 'x86_64')
@@ -14,8 +14,8 @@ makedepends=('cmake' 'automoc4' 'git' 'flex')
 provides=('quanta')
 replaces=('quanta' 'quanta-svn')
 conflicts=('quanta' 'quanta-svn' 'kdevelop-extra-plugins-executebrowser-svn' 'kdevelop-extra-plugins-executescript-svn' 'kdevelop-extra-plugins-xdebug-svn')
-source=('cmakelists.patch')
-md5sums=('36bc516b06f6144c41b3d1446118ccb0')
+source=()
+md5sums=()
 
 _gitroot="git://gitorious.org/kdevelop/quanta.git"
 _gitname="quanta"
@@ -26,21 +26,11 @@ build() {
     msg "Connecting to the GIT server...."
 
     if [[ -d "$srcdir/$_gitname" ]] ; then
-        cd ${_gitname}
-
-        # Revert patched files
-        git checkout -- languages/xml/language/duchain/CMakeLists.txt \
-            debuggers/crossfire/CMakeLists.txt
-
-        git pull origin
+        cd ${_gitname} && git pull origin
         msg "The local files are updated."
     else
         git clone ${_gitroot} ${_gitname}
     fi
-
-    # Patch CMakeLists to fix linker errors
-    cd "$srcdir/$_gitname"
-    git apply ../cmakelists.patch
 
     msg "GIT checkout done"
     msg "Starting make..."
