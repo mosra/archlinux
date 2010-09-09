@@ -1,10 +1,11 @@
 # $Id: PKGBUILD 60156 2009-12-01 10:21:15Z andrea $
 # Maintainer: Andrea Scarpino <andrea@archlinux.org
 # Contributor: Pierre Schmitz <pierre@archlinux.de>
+# Contributor: mosra <mosra@centrum.cz>
 
 pkgname=kdelibs
 pkgver=4.5.1
-pkgrel=1
+pkgrel=2
 pkgdesc="KDE Core Libraries"
 arch=('i686' 'x86_64')
 url='http://www.kde.org'
@@ -17,11 +18,15 @@ makedepends=('pkgconfig' 'cmake' 'automoc4' 'intltool' 'avahi' 'libgl' 'hspell' 
 replaces=('arts' 'kdelibs-experimental')
 install='kdelibs.install'
 source=("http://download.kde.org/stable/${pkgver}/src/${pkgname}-${pkgver}.tar.bz2"
-        'kde-applications-menu.patch' 'archlinux-menu.patch' 'abs-syntax-highlight.patch')
+        'kde-applications-menu.patch' 'archlinux-menu.patch' 'abs-syntax-highlight.patch'
+        'katetexthistory.cpp.patch' 'katetexthistory.h.patch' 'katetextblock.cpp.patch')
 sha1sums=('9d3eff7c35040bba6b6345a41e98a8e29ed2a1a3'
           '86ee8c8660f19de8141ac99cd6943964d97a1ed7'
           '63a850ab4196b9d06934f2b4a13acd9f7739bc67'
-          'd994f262356af5b9e4e9619646e471bd98c91efb')
+          'd994f262356af5b9e4e9619646e471bd98c91efb'
+          '7426650129602efb2b08b04c74fc22130ce48f25'
+          '3b00a7c62189a317c141242a10e917e9ff58613b'
+          'f512e61c7c32e0ea9c26f24c36d9c2fc03fbee89')
 
 build() {
        cd ${srcdir}/${pkgname}-${pkgver}
@@ -33,8 +38,13 @@ build() {
        # add syntax highlightning for PKGBUILD and .install files
        patch -p1 -i $srcdir/abs-syntax-highlight.patch
 
+       # Patched Kate to work with new KDevelop
+       patch -p4 -i $srcdir/katetexthistory.cpp.patch
+       patch -p4 -i $srcdir/katetexthistory.h.patch
+       patch -p4 -i $srcdir/katetextblock.cpp.patch
+
        cd ${srcdir}
-       mkdir build
+       mkdir -p build
        cd build
        cmake ../${pkgname}-${pkgver} \
                -DCMAKE_BUILD_TYPE=Release \

@@ -1,0 +1,19 @@
+--- branches/KDE/4.5/kdelibs/kate/buffer/katetextblock.cpp	2010/09/06 00:49:03	1171997
++++ branches/KDE/4.5/kdelibs/kate/buffer/katetextblock.cpp	2010/09/06 00:49:36	1171998
+@@ -355,6 +355,7 @@
+ 
+   // get text
+   QString &textOfLine = m_lines[line]->textReadWrite ();
++  int oldLength = textOfLine.size ();
+ 
+   // check if valid column
+   Q_ASSERT (range.start().column() >= 0);
+@@ -371,7 +372,7 @@
+   /**
+    * notify the text history
+    */
+-  m_buffer->history().removeText (range);
++  m_buffer->history().removeText (range, oldLength);
+ 
+   /**
+    * cursor and range handling below

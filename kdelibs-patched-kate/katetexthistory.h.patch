@@ -1,0 +1,28 @@
+--- branches/KDE/4.5/kdelibs/kate/buffer/katetexthistory.h	2010/06/27 18:59:06	1143427
++++ branches/KDE/4.5/kdelibs/kate/buffer/katetexthistory.h	2010/09/06 00:49:36	1171998
+@@ -99,6 +99,14 @@
+          * @param moveOnInsert behavior of this cursor on insert of text at it's position
+          */
+         void transformCursor (int &line, int &column, bool moveOnInsert) const;
++        
++        /**
++         * reverse transform cursor for this history entry
++         * @param line line number of the cursor to transform
++         * @param column column number of the cursor to transform
++         * @param moveOnInsert behavior of this cursor on insert of text at it's position
++         */
++        void reverseTransformCursor (int &line, int &column, bool moveOnInsert) const;
+ 
+         /**
+          * Types of entries, matching editing primitives of buffer and placeholder
+@@ -195,8 +203,9 @@
+     /**
+      * Notify about remove text at given range.
+      * @param range range of text to remove, must be on one line only.
++     * @param oldLineLength text length of the line before this remove
+      */
+-    void removeText (const KTextEditor::Range &range);
++    void removeText (const KTextEditor::Range &range, int oldLineLength);
+ 
+     /**
+      * Generic function to add a entry to the history. Is used by the above functions for the different editing primitives.
