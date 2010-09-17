@@ -4,8 +4,8 @@ pkgver=1
 pkgrel=1
 pkgdesc="CLI utility for adjusting optical drive speed"
 arch=('i686' 'x86_64')
-url=""
-license=('GPL')
+url="http://noto.de/speed/"
+license=('GPLv2')
 source=(speedcontrol.c)
 md5sums=('b7ec90d2b944de17b3a10b4a4e714c2f')
 
