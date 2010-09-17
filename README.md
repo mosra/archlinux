@@ -11,6 +11,7 @@ Packages maintained by me and available in AUR
  * kdevelop-git
  * kdevelop-pg-qt-git
  * kdevplatform-git
+ * mingw32-qjson
  * msrp
  * quanta-git
  * speedcontrol
