@@ -1,7 +1,8 @@
 # Contributor: Andre Klitzing <andre () incubo () de>
+# Contributor: mosra <mosra@centrum.cz>
 pkgname=nsis
 pkgver=2.46
-pkgrel=2
+pkgrel=3
 pkgdesc='A professional open source system to create Windows installers'
 arch=('i686' 'x86_64')
 url='http://nsis.sourceforge.net'
@@ -19,6 +20,11 @@ build() {
   # Patch taken from
   # http://cvs.fedoraproject.org/viewvc/rpms/mingw32-nsis/F-11/nsis-2.43-64bit-fixes.patch
   patch -p1 -i "$srcdir/nsis-2.43-64bit-fixes.patch" || return 1
+
+  # Patch version from DD-MM-YYY.cvs to 2.46 (makes CPack working again)
+  sed -i "s/'Version of NSIS', cvs_version)/'Version of NSIS', '${pkgver}')/" \
+    "${srcdir}/${pkgname}-${pkgver}-src/SConstruct"
+
   scons PREFIX_DEST="$pkgdir/" PREFIX=/usr/i486-mingw32 SKIPUTILS='NSIS Menu' install || return 1
 
   # Add a symlink to 'makensis' for lazy people ;-)
