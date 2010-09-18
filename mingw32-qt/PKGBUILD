@@ -1,9 +1,10 @@
 # Contributor: Denis Martinez <deuns.martinez AT gmail.com>
+# Contributor: mosra <mosra@centrum.cz>
 
 pkgname=mingw32-qt
-pkgver=4.6.2
-_sdkver=2010.02.1
-pkgrel=3
+pkgver=4.6.3
+_sdkver=2010.04
+pkgrel=1
 pkgdesc="The Qt gui toolkit (mingw32)."
 arch=('i686' 'x86_64')
 url="http://qt.nokia.com/"
@@ -19,7 +20,7 @@ options=()
 install=
 source=(http://get.qt.nokia.com/qtsdk/qt-sdk-win-opensource-${_sdkver}.exe
         qmake.conf i486-mingw32-qmake)
-md5sums=('fca2e5c9c73c4891ba5b0ea3f187d407'
+md5sums=('7640d07aa2cbc4fa3b9a3d20ae2e22d9'
          '7e2477edf89b22d05130c6d34076ce3f'
          '5686d930bfc73c5d996389b520f27a15')
 
