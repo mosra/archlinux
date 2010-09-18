@@ -1,0 +1,70 @@
+# Contributor: Denis Martinez <deuns.martinez AT gmail.com>
+
+pkgname=mingw32-qt
+pkgver=4.6.2
+_sdkver=2010.02.1
+pkgrel=3
+pkgdesc="The Qt gui toolkit (mingw32)."
+arch=('i686' 'x86_64')
+url="http://qt.nokia.com/"
+license=('LGPL')
+groups=()
+depends=('mingw32-gcc' 'qt')
+makedepends=('p7zip' 'perl' 'sed')
+provides=()
+conflicts=()
+replaces=()
+backup=()
+options=()
+install=
+source=(http://get.qt.nokia.com/qtsdk/qt-sdk-win-opensource-${_sdkver}.exe
+        qmake.conf i486-mingw32-qmake)
+md5sums=('fca2e5c9c73c4891ba5b0ea3f187d407'
+         '7e2477edf89b22d05130c6d34076ce3f'
+         '5686d930bfc73c5d996389b520f27a15')
+
+build()
+{
+  cd "${srcdir}"
+
+  msg "Extracting data from windows installer..."
+  7z x -y "${srcdir}/qt-sdk-win-opensource-${_sdkver}.exe" '$OUTDIR' || return 1
+
+  msg "Copying the contents..."
+  install -d "${pkgdir}/usr/i486-mingw32" || return 1
+  mv '$OUTDIR/qt/qt'/{bin,include,lib,src} "${pkgdir}/usr/i486-mingw32/" || return 1
+  install -d "${pkgdir}/usr/i486-mingw32/bin/qt-plugins" || return 1
+  mv '$OUTDIR/qt/qt/plugins'/* "${pkgdir}/usr/i486-mingw32/bin/qt-plugins/" || return 1
+  install -d "${pkgdir}/usr/i486-mingw32/share/mkspecs" || return 1
+  mv '$OUTDIR/qt/qt/mkspecs'/* "${pkgdir}/usr/i486-mingw32/share/mkspecs/" || return 1
+
+  # copy *.dll from mingw in to bin/qt-bin
+  install -d "${pkgdir}/usr/i486-mingw32/bin/qt-bin" || return 1
+  mv '$OUTDIR/mingw/mingw/bin'/*.dll "${pkgdir}/usr/i486-mingw32/bin/qt-bin/" || return 1
+
+  msg "Generating the headers..."
+  export QTDIR="${pkgdir}/usr/i486-mingw32"
+  perl "${QTDIR}/bin/syncqt" || return 1
+
+  msg "Removing the debug libraries..."
+  find "${pkgdir}/usr/i486-mingw32/bin" -name '*.dll' | while read lib; do
+    debug_lib="`echo -n "${lib}" | sed -r 's/(4?)\.dll$/d\1.dll/'`"
+    test -f "${debug_lib}" && rm -fv "${debug_lib}"
+  done
+  find "${pkgdir}/usr/i486-mingw32/lib" -name '*.a' | while read lib; do
+    debug_lib="`echo -n "${lib}" | sed -r 's/(4?)\.a$/d\1.a/'`"
+    test -f "${debug_lib}" && rm -fv "${debug_lib}"
+  done
+  find "${pkgdir}/usr/i486-mingw32/lib" -name '*.prl' | while read lib; do
+    debug_prl="`echo -n "${lib}" | sed -r 's/(4?)\.prl$/d\1.prl/'`"
+    test -f "${debug_prl}" && rm -fv "${debug_prl}"
+  done
+
+  find "${pkgdir}/usr/i486-mingw32" -type f -exec chmod 644 {} \; || return 1
+  find "${pkgdir}/usr/i486-mingw32" -type d -exec chmod 755 {} \; || return 1
+
+  install -D -m644 ${srcdir}/qmake.conf ${pkgdir}/usr/share/qt/mkspecs/win32-x-g++/qmake.conf || return 1
+  install -D -m755 ${srcdir}/i486-mingw32-qmake ${pkgdir}/usr/bin/i486-mingw32-qmake
+}
+
+# vim:set ts=2 sw=2 et:
