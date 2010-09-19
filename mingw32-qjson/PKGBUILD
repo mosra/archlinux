@@ -10,7 +10,7 @@ pkgdesc="A qt-based library that maps JSON data to QVariant objects (mingw32)"
 arch=('i686' 'x86_64')
 license=('GPL')
 url="http://qjson.sourceforge.net"
-depends=('mingw32-qt' 'mingw32-gcc')
+depends=('mingw32-qt>=4.6' 'mingw32-gcc')
 makedepends=('cmake')
 source=(
     "http://downloads.sourceforge.net/${_pkgname}/${_pkgname}-${pkgver}.tar.bz2"
