@@ -19,8 +19,8 @@ options=()
 install=
 source=(
     "http://ftp.de.debian.org/debian/pool/main/m/${pkgname}/${pkgname}_${pkgver}.orig.tar.gz"
-    "http://people.canonical.com/~agateau/msrp/${pkgname}-${pkgver}-0001-git-support.diff"
-    "http://people.canonical.com/~agateau/msrp/${pkgname}-${pkgver}-0002-bzr-support.diff"
+    "${pkgname}-${pkgver}-0001-git-support.diff"
+    "${pkgname}-${pkgver}-0002-bzr-support.diff"
 )
 noextract=()
 md5sums=('cc327c68f89bbf2466b167371fc34213'
