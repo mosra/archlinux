@@ -1,0 +1,42 @@
+# Contributor: Andrea Scarpino <andrea@archlinux.org>
+
+pkgname=libbluedevil-git
+pkgver=20100727
+pkgrel=1
+pkgdesc='A Qt wrapper for bluez used in the new KDE bluetooth stack'
+arch=('i686' 'x86_64')
+url="http://gitorious.org/libbluedevil"
+license=('GPL')
+depends=('qt' 'bluez')
+makedepends=('cmake' 'git')
+provides=("libbluedevil")
+conflicts=("libbluedevil")
+source=()
+md5sums=()
+
+_gitroot="git://gitorious.org/libbluedevil/libbluedevil.git"
+_gitname="libbluedevil"
+
+build(){
+  cd ${srcdir}
+
+  if [[ -d $_gitname ]]; then
+	(cd $_gitname && git pull origin)
+  else
+	git clone $_gitroot $_gitname
+  fi
+  
+  mkdir build
+  cd build
+  
+  cmake ../${_gitname} \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_SKIP_RPATH=ON \
+    -DCMAKE_INSTALL_PREFIX=/usr
+  make
+}
+
+package() {
+  cd ${srcdir}/build
+  make DESTDIR=${pkgdir} install
+}
