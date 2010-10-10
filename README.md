@@ -4,13 +4,14 @@ Packages maintained by me and available in AUR
 ==============================================
 
  * blender-freestyle-svn
- * blender2.4-svn
+ * bluedevil-git
  * kate-filetree-plugin
  * kdevelop-extra-plugins-php-docs-git
  * kdevelop-extra-plugins-php-git
  * kdevelop-git
  * kdevelop-pg-qt-git
  * kdevplatform-git
+ * libbluedevil-git
  * mingw32-qjson
  * msrp
  * quanta-git
