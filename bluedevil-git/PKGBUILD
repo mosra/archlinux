@@ -2,11 +2,11 @@
 # Contributor: mosra <mosra@centrum.cz>
 
 pkgname=bluedevil-git
-pkgver=20101010
+pkgver=20101012
 pkgrel=1
 pkgdesc='The new bluetooth stack for KDE, it’s composed of: KCM, KDED, KIO, Library and some other small applications'
 arch=('i686' 'x86_64')
-url="http://gitorious.org/bluedevil"
+url="http://gitweb.kde.org/bluedevil.git"
 license=('GPL')
 depends=('kdebase-workspace' 'libbluedevil' 'obex-data-server' 'obexd-client')
 makedepends=('cmake' 'automoc4' 'git')
@@ -15,7 +15,7 @@ conflicts=(bluedevil)
 source=()
 md5sums=()
 
-_gitroot="git://gitorious.org/bluedevil/bluedevil.git"
+_gitroot="git://git.kde.org/bluedevil.git"
 _gitname="bluedevil"
 
 build(){
