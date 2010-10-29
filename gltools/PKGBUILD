@@ -10,18 +10,20 @@ depends=('glew' 'mesa')
 makedepends=('unzip' 'cmake')
 source=("http://www.starstonesoftware.com/files/SB${pkgver}.zip"
         "CMakeLists.txt"
+        "FindGLEW.cmake"
         "FindGLTools.cmake")
 noextract=(SB${pkgver}.zip)
 md5sums=('e7aafa353c62f8430d1168971400e0f2'
-         '8dfcd10f4fa9860fd906e78cd60db0c2'
-         'c01b34b966060c8743e8974c008f0f73')
+         'dda5dd5ea5a64ec58a9e1657705e9ce7'
+         '360988c991fb3238fcc48768c2bbec17'
+         '2205cbfdd51d8d90b98b0b93f021afde')
 
 build() {
     cd "$srcdir"
 
     # Extract sources and copy cmake files there
     unzip -qo SB${pkgver}.zip
-    cp CMakeLists.txt FindGLTools.cmake SB${pkgver}/Src/GLTools
+    cp CMakeLists.txt FindGLEW.cmake FindGLTools.cmake SB${pkgver}/Src/GLTools
 
     mkdir -p build
     cd build

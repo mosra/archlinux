@@ -7,24 +7,21 @@
 # GLTOOLS_INCLUDE_DIR       - Include dir
 #
 
-if(GLTOOLS_LIBRARY AND GLTOOLS_INCLUDE_DIR)
+find_package(GLEW REQUIRED)
 
-    set(GLTOOLS_FOUND TRUE)
+# Static library
+find_library(GLTOOLS_LIBRARY gltools)
 
-else()
+# Include dir
+find_path(GLTOOLS_INCLUDE_DIR
+    NAMES GLTools.h
+)
 
-    # Static library
-    find_library(GLTOOLS_LIBRARY gltools)
+# Add GLEW include dir to GLTools include dir too
+set(GLTOOLS_INCLUDE_DIR ${GLTOOLS_INCLUDE_DIR} ${GLEW_INCLUDE_DIR})
 
-    # Include dir
-    find_path(GLTOOLS_INCLUDE_DIR
-        NAMES GLTools.h
-    )
-
-    include(FindPackageHandleStandardArgs)
-    find_package_handle_standard_args("GLTools" DEFAULT_MSG
-        GLTOOLS_LIBRARY
-        GLTOOLS_INCLUDE_DIR
-    )
-
-endif()
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args("GLTools" DEFAULT_MSG
+    GLTOOLS_LIBRARY
+    GLTOOLS_INCLUDE_DIR
+)
