@@ -8,7 +8,7 @@ url="http://kde-apps.org/content/show.php/Kate+File+Tree+Plugin?content=132383"
 license=('GPL')
 groups=('kde')
 depends=('kdesdk-kate')
-makedepends=('cmake')
+makedepends=('cmake' 'automoc4')
 source=("http://kde-apps.org/CONTENT/content-files/132383-kate-filetree-${pkgver}.tar.bz2")
 md5sums=('f13a623e23bde0908829bfe36fd0b81b')
 
