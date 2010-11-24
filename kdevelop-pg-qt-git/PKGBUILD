@@ -1,7 +1,7 @@
 # Contributor: mosra <mosra@centrum.cz>
 
 pkgname=kdevelop-pg-qt-git
-pkgver=20100614
+pkgver=20101124
 pkgrel=1
 pkgdesc="KDevelop Parser Generator, a LL(1) parser generator used mainly by KDevelop language plugins"
 arch=('i686' 'x86_64')
@@ -9,13 +9,11 @@ url="http://www.kdevelop.org"
 license=('GPL')
 depends=('kdelibs')
 makedepends=('cmake' 'automoc4' 'git')
-provides=('kdevelop-pg-qt-svn')
 conflicts=()
-replaces=('kdevelop-pg-qt-svn')
 source=()
 md5sums=()
 
-_gitroot="git://gitorious.org/kdevelop/kdevelop-pg-qt.git"
+_gitroot="git://git.kde.org/kdevelop-pg-qt"
 _gitname="kdevelop-pg-qt"
 
 build() {

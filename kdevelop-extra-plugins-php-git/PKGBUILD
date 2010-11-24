@@ -2,7 +2,7 @@
 # Contributor: mosra <mosra@centrum.cz>
 
 pkgname=(kdevelop-extra-plugins-php-git)
-pkgver=20100515
+pkgver=20101124
 pkgrel=1
 pkgdesc="A PHP plugin for KDevelop development environment for KDE - GIT build"
 arch=('i686' 'x86_64')
@@ -12,13 +12,12 @@ groups=('kde' 'kdevelop-extra-plugins')
 depends=('kdevplatform-git')
 optdepends=('kdevelop-git')
 makedepends=('cmake' 'automoc4' 'git' 'kdevelop-pg-qt-git')
-provides=('kdevelop-php' 'kdevelop-extra-plugins-php-svn')
+provides=('kdevelop-php')
 conflicts=('kdevelop-php')
-replaces=('kdevelop-extra-plugins-php-svn')
 source=()
 md5sums=()
 
-_gitroot="git://gitorious.org/kdevelop/php.git"
+_gitroot="git://git.kde.org/kdev-php"
 _gitname="php"
 
 build() {

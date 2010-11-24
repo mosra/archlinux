@@ -2,7 +2,7 @@
 # Contributor: mosra <mosra@centrum.cz>
 
 pkgname=kdevplatform-git
-pkgver=20100505
+pkgver=20101124
 pkgrel=1
 pkgdesc="A C/C++ development platform for KDE - GIT build"
 arch=('i686' 'x86_64')
@@ -10,13 +10,12 @@ url="http://www.kdevelop.org/"
 license=('GPL')
 depends=('kdelibs' 'boost' 'commoncpp2')
 makedepends=('cmake' 'automoc4' 'git')
-provides=('kdevplatform' 'kdevplatform-svn')
+provides=('kdevplatform')
 conflicts=('kdevplatform')
-replaces=('kdevplatform-svn')
 source=()
 md5sums=()
 
-_gitroot="git://gitorious.org/kdevelop/kdevplatform.git"
+_gitroot="git://git.kde.org/kdevplatform"
 _gitname="kdevplatform"
 
 build() {

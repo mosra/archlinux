@@ -1,7 +1,7 @@
 # Contributor: mosra <mosra@centrum.cz>
 
 pkgname=(kdevelop-extra-plugins-php-docs-git)
-pkgver=20100506
+pkgver=20101124
 pkgrel=1
 pkgdesc="A PHP documentation plugin for KDevelop - GIT build"
 arch=('i686' 'x86_64')
@@ -11,13 +11,12 @@ groups=('kde' 'kdevelop-extra-plugins')
 depends=('kdevplatform-git')
 optdepends=('kdevelop-git')
 makedepends=('cmake' 'automoc4' 'git')
-provides=('kdevelop-php-docs' 'kdevelop-extra-plugins-php-doc-svn')
+provides=('kdevelop-php-docs')
 conflicts=('kdevelop-php-docs')
-replaces=('kdevelop-extra-plugins-php-doc-svn')
 source=()
 md5sums=()
 
-_gitroot="git://gitorious.org/kdevelop/php-docs.git"
+_gitroot="git://git.kde.org/kdev-php-docs"
 _gitname="php-docs"
 
 build() {
