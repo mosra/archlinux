@@ -2,14 +2,14 @@
 # Contributor: mosra <mosra@centrum.cz>
 
 pkgname=kdevplatform-git
-pkgver=20101124
+pkgver=20101206
 pkgrel=1
 pkgdesc="A C/C++ development platform for KDE - GIT build"
 arch=('i686' 'x86_64')
 url="http://www.kdevelop.org/"
 license=('GPL')
-depends=('kdelibs' 'boost' 'commoncpp2')
-makedepends=('cmake' 'automoc4' 'git')
+depends=('kdelibs' 'boost-libs' 'subversion' 'qjson')
+makedepends=('cmake' 'automoc4' 'boost' 'git')
 provides=('kdevplatform')
 conflicts=('kdevplatform')
 source=()
