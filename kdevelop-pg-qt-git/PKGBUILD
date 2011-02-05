@@ -1,7 +1,7 @@
 # Contributor: mosra <mosra@centrum.cz>
 
 pkgname=kdevelop-pg-qt-git
-pkgver=20110119
+pkgver=20110204
 pkgrel=1
 pkgdesc="KDevelop Parser Generator, a LL(1) parser generator used mainly by KDevelop language plugins"
 arch=('i686' 'x86_64')
@@ -13,7 +13,7 @@ conflicts=()
 source=('flex-without-bison.patch')
 md5sums=('bf6c73d24fe212e6095585e5d49d8ede')
 
-_gitroot="git://git.kde.org/kdevelop-pg-qt"
+_gitroot="git://anongit.kde.org/kdevelop-pg-qt"
 _gitname="kdevelop-pg-qt"
 
 build() {
@@ -25,6 +25,11 @@ build() {
 
         # Revert the flex-without-bison.patch
         git checkout kdev-pg/CMakeLists.txt
+
+        # Change remote url to anongit
+        if [ -z $(git branch -v | grep anongit) ] ; then
+            git remote set-url origin ${_gitroot}
+        fi
 
         git pull origin
         msg "The local files are updated."

@@ -2,7 +2,7 @@
 # Contributor: mosra <mosra@centrum.cz>
 
 pkgname=kdevelop-git
-pkgver=20101124
+pkgver=20110204
 pkgrel=1
 pkgdesc="A C/C++ development environment for KDE - GIT build"
 arch=('i686' 'x86_64')
@@ -15,7 +15,7 @@ conflicts=('kdevelop')
 source=()
 md5sums=()
 
-_gitroot="git://git.kde.org/kdevelop"
+_gitroot="git://anongit.kde.org/kdevelop"
 _gitname="kdevelop"
 
 build() {
@@ -23,7 +23,14 @@ build() {
     msg "Connecting to GIT server...."
 
     if [ -d $_gitname ] ; then
-        cd $_gitname && git pull origin
+        cd $_gitname
+
+        # Change remote url to anongit
+        if [ -z $(git branch -v | grep anongit) ] ; then
+            git remote set-url origin ${_gitroot}
+        fi
+
+        git pull origin
         msg "The local files are updated."
     else
         git clone $_gitroot $_gitname
