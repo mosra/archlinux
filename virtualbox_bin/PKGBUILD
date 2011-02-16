@@ -62,10 +62,10 @@ build() {
 
   # Replace VirtualBox built-in Qt by system Qt libraries (disabled as of
   # 2010-03-26, 3.1.6-1)
-  #for _lib in libQt{Core,Gui,Network,OpenGL}; do
-  #  rm "${_lib}VBox.so.4"
-  #  ln -s "/usr/lib/${_lib}.so.4" "${_lib}VBox.so.4"
-  #done
+  for _lib in libQt{Core,Gui,Network,OpenGL}; do
+   rm "${_lib}VBox.so.4"
+   ln -s "/usr/lib/${_lib}.so.4" "${_lib}VBox.so.4"
+  done
 
   # Patch "vboxshell.py" to use Python 2.x instead of Python 3
   sed -i 's#/usr/bin/python#\02#' "${pkgdir}/opt/VirtualBox/vboxshell.py"
