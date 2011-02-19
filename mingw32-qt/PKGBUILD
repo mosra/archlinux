@@ -35,7 +35,7 @@ build()
 
   msg "Copying the contents..."
   install -d "${pkgdir}/usr/i486-mingw32/bin"
-  mv '$OUTDIR/bin'/{include,lib,src} "${pkgdir}/usr/i486-mingw32/"
+  mv '$OUTDIR/bin/lib' "${pkgdir}/usr/i486-mingw32/"
   mv '$OUTDIR/bin/bin'/{Qt*.dll,phonon*.dll,syncqt,elf2e32_qtwrapper} "${pkgdir}/usr/i486-mingw32/bin/"
   install -d "${pkgdir}/usr/i486-mingw32/bin/qt-plugins"
   mv '$OUTDIR/bin/plugins'/* "${pkgdir}/usr/i486-mingw32/bin/qt-plugins/"
@@ -47,8 +47,7 @@ build()
   mv '$OUTDIR/bin/bin'/{libgcc_s_dw2-1.dll,mingwm10.dll} "${pkgdir}/usr/i486-mingw32/bin/qt-bin/"
 
   msg "Generating the headers..."
-  export QTDIR="${pkgdir}/usr/i486-mingw32"
-  perl "${QTDIR}/bin/syncqt"
+  perl "${pkgdir}/usr/i486-mingw32/bin/syncqt" -base-dir \$OUTDIR/bin -copy -outdir "${pkgdir}/usr/i486-mingw32"
 
   msg "Removing the debug libraries..."
   find "${pkgdir}/usr/i486-mingw32/bin" -name '*.dll' | while read lib; do
