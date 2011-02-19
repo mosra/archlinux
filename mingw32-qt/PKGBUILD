@@ -48,6 +48,7 @@ build()
 
   msg "Generating the headers..."
   perl "${pkgdir}/usr/i486-mingw32/bin/syncqt" -base-dir \$OUTDIR/bin -copy -outdir "${pkgdir}/usr/i486-mingw32"
+  rm -r "${pkgdir}/usr/i486-mingw32/src"
 
   msg "Removing the debug libraries..."
   find "${pkgdir}/usr/i486-mingw32/bin" -name '*.dll' | while read lib; do
