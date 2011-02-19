@@ -24,7 +24,7 @@ source=(http://get.qt.nokia.com/qt/source/qt-win-opensource-$pkgver-mingw.exe
         i486-mingw32-qmake)
 md5sums=('2fdcb64bbfe78370c3b0a9e4fc3de026'
          '7e2477edf89b22d05130c6d34076ce3f'
-         '5686d930bfc73c5d996389b520f27a15')
+         '5b5fa1cc1b42fbde1f77ac05bdb519e3')
 
 build()
 {
