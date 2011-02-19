@@ -36,11 +36,10 @@ build()
   msg "Copying the contents..."
   install -d "${pkgdir}/usr/i486-mingw32/bin"
   mv '$OUTDIR/bin/lib' "${pkgdir}/usr/i486-mingw32/"
+  rm -r "${pkgdir}/usr/i486-mingw32/lib/fonts"
   mv '$OUTDIR/bin/bin'/{Qt*.dll,phonon*.dll,syncqt,elf2e32_qtwrapper} "${pkgdir}/usr/i486-mingw32/bin/"
   install -d "${pkgdir}/usr/i486-mingw32/bin/qt-plugins"
   mv '$OUTDIR/bin/plugins'/* "${pkgdir}/usr/i486-mingw32/bin/qt-plugins/"
-  install -d "${pkgdir}/usr/i486-mingw32/share/mkspecs"
-  mv '$OUTDIR/bin/mkspecs'/* "${pkgdir}/usr/i486-mingw32/share/mkspecs/"
 
   # copy *.dll from mingw in to bin/qt-bin
   install -d "${pkgdir}/usr/i486-mingw32/bin/qt-bin"
