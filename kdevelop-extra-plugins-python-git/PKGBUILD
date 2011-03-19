@@ -1,5 +1,7 @@
+# Contributor: mosra <mosra@centrum.cz>
+
 pkgname=kdevelop-extra-plugins-python-git
-pkgver=20110205
+pkgver=20110319
 pkgrel=1
 pkgdesc="A Python plugin for KDevelop - GIT build"
 arch=('i686' 'x86_64')
@@ -10,8 +12,8 @@ depends=('kdevelop-git')
 makedepends=('cmake' 'automoc4' 'git' 'kdevelop-pg-qt-git')
 provides=('kdevelop-python')
 conflicts=('kdevelop-python')
-source=()
-md5sums=()
+source=('build.patch')
+md5sums=('bdc2f6871e8da678252ba5db731e301c')
 
 _gitroot="git://anongit.kde.org/kdev-python"
 _gitname="python"
@@ -23,16 +25,20 @@ build() {
     if [ -d "${_gitname}" ] ; then
         cd "${_gitname}"
 
-	# Change remote url to anongit
+        # Change remote url to anongit
         if [ -z $(git branch -v | grep anongit) ] ; then
             git remote set-url origin ${_gitroot}
         fi
-	
-	git pull origin
+
+        git checkout .
+        git pull origin
         msg "The local files are updated."
     else
         git clone "${_gitroot}" "${_gitname}"
     fi
+
+    # Build fixes
+    git apply ${srcdir}/build.patch
 
     msg "GIT checkout done or server timeout"
     msg "Starting make..."

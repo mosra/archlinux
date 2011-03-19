@@ -1,0 +1,45 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index b6b54d7..b97dc99 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -61,7 +61,6 @@ install(FILES kdevpythonsupport.desktop DESTINATION ${SERVICES_INSTALL_DIR})
+ install(FILES pythonpythonparser.py DESTINATION ${BIN_INSTALL_DIR})
+ install(FILES documentation/pydoc.py DESTINATION ${BIN_INSTALL_DIR})
+ 
+-FILE(MAKE_DIRECTORY ${DOCUMENTATION_INSTALL_DIR})
+ install(FILES documentation/builtindocumentation.py DESTINATION ${DOCUMENTATION_INSTALL_DIR})
+ install(FILES documentation/math.py DESTINATION ${DOCUMENTATION_INSTALL_DIR})
+ 
+diff --git a/parser/CMakeLists.txt b/parser/CMakeLists.txt
+index ab4ec3b..a147814 100644
+--- a/parser/CMakeLists.txt
++++ b/parser/CMakeLists.txt
+@@ -24,15 +24,16 @@ endif( EXISTS ${kdevpython_SOURCE_DIR}/python-src/Makefile )
+ execute_process(COMMAND /usr/bin/env make -f ${kdevpython_SOURCE_DIR}/python-src/Makefile WORKING_DIRECTORY ${kdevpython_SOURCE_DIR}/python-src)
+ message(STATUS "Any warnings about missing dependencies for python can be ignored, you won't need any of them for sure.")
+ 
+-execute_process(COMMAND /usr/bin/env cp -u ${kdevpython_SOURCE_DIR}/python-src/libpython2.7.so ${BIN_INSTALL_DIR})
++file(RENAME ${kdevpython_SOURCE_DIR}/python-src/libpython2.7.so ${kdevpython_SOURCE_DIR}/python-src/libkdev4python2.7.so)
+ 
+ kde4_add_library( kdev4pythonparser SHARED ${parser_SRCS} ${parser_STAT_SRCS} )
+ target_link_libraries(kdev4pythonparser 
+     ${KDE4_KDECORE_LIBS} 
+     ${KDEVPLATFORM_LANGUAGE_LIBRARIES}
+     ${QT_QTCORE_LIBRARY} 
+-    ${BIN_INSTALL_DIR}/libpython2.7.so
++    ${kdevpython_SOURCE_DIR}/python-src/libkdev4python2.7.so
+ )
+ 
++install(FILES ${kdevpython_SOURCE_DIR}/python-src/libkdev4python2.7.so DESTINATION ${LIB_INSTALL_DIR})
+ install(TARGETS kdev4pythonparser DESTINATION ${INSTALL_TARGETS_DEFAULT_ARGS})
+ 
+diff --git a/python-src/Parser/asdl_c.py b/python-src/Parser/asdl_c.py
+index 1cd77aa..ed96615 100755
+--- a/python-src/Parser/asdl_c.py
++++ b/python-src/Parser/asdl_c.py
+@@ -1,4 +1,4 @@
+-#! /usr/bin/env python
++#! /usr/bin/env python2
+ """Generate C code from an ASDL description."""
+ 
+ # TO DO
