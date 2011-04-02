@@ -3,8 +3,8 @@
 # Contributor: mosra <mosra@centrum.cz>
 
 pkgname=mingw32-qt
-pkgver=4.7.1
-pkgrel=1
+pkgver=4.7.2
+pkgrel=2
 pkgdesc="The Qt gui toolkit (mingw32)."
 arch=('any')
 url="http://qt.nokia.com/"
@@ -22,7 +22,7 @@ install=
 source=(http://get.qt.nokia.com/qt/source/qt-win-opensource-$pkgver-mingw.exe
         qmake.conf
         i486-mingw32-qmake)
-md5sums=('2fdcb64bbfe78370c3b0a9e4fc3de026'
+md5sums=('31568d8bed7009899c4e983cc7da7a81'
          '7e2477edf89b22d05130c6d34076ce3f'
          '5b5fa1cc1b42fbde1f77ac05bdb519e3')
 
