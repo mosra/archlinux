@@ -1,9 +1,10 @@
 # $Id: PKGBUILD 107019 2011-01-20 14:18:34Z pierre $
 # Maintainer: Pierre Schmitz <pierre@archlinux.de>
+# Contributor: mosra <mosra@centrum.cz>
 
 pkgname=psi
 pkgver=0.14
-pkgrel=4
+pkgrel=5
 pkgdesc='Instant messaging application designed for the Jabber IM'
 url='http://psi-im.org/'
 license=('GPL')
@@ -11,13 +12,16 @@ arch=('i686' 'x86_64')
 depends=('qca-ossl' 'qca-gnupg' 'enchant' 'libxss' 'xdg-utils')
 install='psi.install'
 source=("http://downloads.sourceforge.net/psi/psi-${pkgver}.tar.bz2"
-        'archlinux.patch')
+        'archlinux.patch'
+        '1030-psi-coloring-tooltip.diff')
 md5sums=('9d7dcce3bcab53b741a712199bd986be'
-         'a965c6a4ad1028f14a5897c3f5088ae8')
+         'a965c6a4ad1028f14a5897c3f5088ae8'
+         'c54bc4fec4368c054baae4bf4b87b175')
 
 build() {
 	cd ${srcdir}/psi-${pkgver}
 	patch -p1 -i ${srcdir}/archlinux.patch
+	patch -p1 -i ${srcdir}/1030-psi-coloring-tooltip.diff
 	./configure --prefix=/usr --disable-bundled-qca --release --no-separate-debug-info
 	make
 }
