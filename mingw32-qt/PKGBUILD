@@ -16,7 +16,7 @@ provides=()
 conflicts=()
 replaces=()
 backup=()
-options=()
+options=(!strip)
 install=
 
 source=(http://get.qt.nokia.com/qt/source/qt-win-opensource-$pkgver-mingw.exe
