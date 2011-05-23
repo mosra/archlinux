@@ -1,7 +1,7 @@
 # Contributor: mosra <mosra@centrum.cz>
 
 pkgname=kdevelop-pg-qt-git
-pkgver=20110501
+pkgver=20110523
 pkgrel=1
 pkgdesc="KDevelop Parser Generator, a LL(1) parser generator used mainly by KDevelop language plugins"
 arch=('i686' 'x86_64')
@@ -57,6 +57,11 @@ build() {
         -DCMAKE_INSTALL_PREFIX=/usr \
         -DCMAKE_BUILD_TYPE=RELWITHDEBINFO
 
-    make || return 1
-    make DESTDIR=${pkgdir} install || return 1
+    make
+}
+
+package() {
+    cd "$srcdir/build"
+
+    make DESTDIR="${pkgdir}" install
 }
