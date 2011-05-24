@@ -53,4 +53,7 @@ package() {
     cd "$srcdir/build"
 
     make DESTDIR="${pkgdir}" install
+
+    # Make kdevelop_attach readable and executable for normal user
+    chmod +rx "$pkgdir/usr/bin/kdevelop_attach"
 }
