@@ -2,7 +2,7 @@
 # Contributor: mosra <mosra@centrum.cz>
 
 pkgname=quanta-git
-pkgver=20110523
+pkgver=20110604
 pkgrel=1
 pkgdesc="An IDE for Web Development based on the KDevelop Platform"
 arch=('i686' 'x86_64')
@@ -29,7 +29,7 @@ build() {
         cd $_gitname
 
         # Change remote url to anongit
-        if [ -z $(git branch -v | grep anongit) ] ; then
+        if [ -z "$(git remote -v | grep anongit)" ] ; then
             git remote set-url origin ${_gitroot}
         fi
 
