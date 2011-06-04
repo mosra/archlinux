@@ -61,8 +61,4 @@ package() {
     cd "$srcdir/build"
 
     make DESTDIR="${pkgdir}" install
-
-    # Make kdevplatform_shell_environment.sh readable and executable for
-    # normal user
-    chmod +rx "$pkgdir/usr/bin/kdevplatform_shell_environment.sh"
 }
