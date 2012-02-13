@@ -3,7 +3,7 @@
 pkgname=(kdevelop-extra-plugins-php-docs-git)
 pkgver=20110604
 pkgrel=1
-pkgdesc="A PHP documentation plugin for KDevelop - GIT build"
+pkgdesc="PHP documentation plugin for KDevelop/Quanta - Git build"
 arch=('i686' 'x86_64')
 url="http://www.kdevelop.org/"
 license=('GPL')
@@ -21,7 +21,7 @@ _gitname="php-docs"
 
 build() {
     cd "$srcdir"
-    msg "Connecting to GIT server...."
+    msg "Connecting to Git server...."
 
     if [ -d $_gitname ] ; then
         cd $_gitname
@@ -37,7 +37,7 @@ build() {
         git clone $_gitroot $_gitname
     fi
 
-    msg "GIT checkout done or server timeout"
+    msg "Git checkout done."
     msg "Starting make..."
 
     mkdir -p "$srcdir/build"

@@ -4,7 +4,7 @@
 pkgname=kdevplatform-git
 pkgver=20110604
 pkgrel=1
-pkgdesc="A C/C++ development platform for KDE - GIT build"
+pkgdesc="A C/C++ development platform for KDE - Git build"
 arch=('i686' 'x86_64')
 url="http://www.kdevelop.org/"
 license=('GPL')
@@ -20,7 +20,7 @@ _gitname="kdevplatform"
 
 build() {
     cd "$srcdir"
-    msg "Connecting to GIT server...."
+    msg "Connecting to Git server..."
 
     if [ -d $_gitname ] ; then
         cd $_gitname
@@ -39,7 +39,7 @@ build() {
         git clone $_gitroot $_gitname
     fi
 
-    msg "GIT checkout done or server timeout"
+    msg "Git checkout done."
 
     # Patch for GCC 4.6 build
     cd "$srcdir/$_gitname"

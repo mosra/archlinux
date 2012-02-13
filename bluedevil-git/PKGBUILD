@@ -4,7 +4,7 @@
 pkgname=bluedevil-git
 pkgver=20110604
 pkgrel=1
-pkgdesc='The new bluetooth stack for KDE, it’s composed of: KCM, KDED, KIO, Library and some other small applications'
+pkgdesc='KDE bluetooth framework - Git version'
 arch=('i686' 'x86_64')
 url="http://gitweb.kde.org/bluedevil.git"
 license=('GPL')
@@ -20,7 +20,7 @@ _gitname="bluedevil"
 
 build(){
     cd "$srcdir"
-    msg "Connecting to GIT server...."
+    msg "Connecting to Git server..."
 
     if [ -d $_gitname ] ; then
         cd $_gitname
@@ -36,7 +36,7 @@ build(){
         git clone $_gitroot $_gitname
     fi
 
-    msg "GIT checkout done or server timeout"
+    msg "Git checkout done."
     msg "Starting make..."
 
     mkdir -p "$srcdir/build"

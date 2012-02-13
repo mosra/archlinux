@@ -4,7 +4,7 @@
 pkgname=(kdevelop-extra-plugins-php-git)
 pkgver=20110604
 pkgrel=1
-pkgdesc="A PHP plugin for KDevelop development environment for KDE - GIT build"
+pkgdesc="PHP language plugin for KDevelop/Quanta - Git build"
 arch=('i686' 'x86_64')
 url="http://www.kdevelop.org/"
 license=('GPL')
@@ -22,7 +22,7 @@ _gitname="php"
 
 build() {
     cd "$srcdir"
-    msg "Connecting to GIT server...."
+    msg "Connecting to Git server..."
 
     if [ -d $_gitname ] ; then
         cd $_gitname
@@ -38,7 +38,7 @@ build() {
         git clone $_gitroot $_gitname
     fi
 
-    msg "GIT checkout done or server timeout"
+    msg "Git checkout done."
     msg "Starting make..."
 
     mkdir -p "$srcdir/build"

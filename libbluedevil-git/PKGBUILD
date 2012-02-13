@@ -4,7 +4,7 @@
 pkgname=libbluedevil-git
 pkgver=20110604
 pkgrel=1
-pkgdesc='A Qt wrapper for bluez used in the new KDE bluetooth stack'
+pkgdesc='A Qt wrapper for bluez used in the new KDE bluetooth stack - Git build'
 arch=('i686' 'x86_64')
 url="http://gitweb.kde.org/libbluedevil.git"
 license=('GPL')
@@ -12,15 +12,13 @@ depends=('qt' 'bluez')
 makedepends=('cmake' 'git')
 provides=("libbluedevil")
 conflicts=("libbluedevil")
-source=()
-md5sums=()
 
 _gitroot="git://anongit.kde.org/libbluedevil.git"
 _gitname="libbluedevil"
 
 build(){
     cd "$srcdir"
-    msg "Connecting to GIT server...."
+    msg "Connecting to Git server..."
 
     if [ -d $_gitname ] ; then
         cd $_gitname
@@ -36,7 +34,7 @@ build(){
         git clone $_gitroot $_gitname
     fi
 
-    msg "GIT checkout done or server timeout"
+    msg "Git checkout done."
     msg "Starting make..."
 
     mkdir -p "$srcdir/build"

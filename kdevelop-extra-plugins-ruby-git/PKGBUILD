@@ -1,9 +1,9 @@
 # Mantainer: mosra <mosra@centrum.cz>
 
 pkgname=(kdevelop-extra-plugins-ruby-git)
-pkgver=20110814
+pkgver=20120212
 pkgrel=1
-pkgdesc="Ruby language support for KDevelop - Git build"
+pkgdesc="Ruby language plugins for KDevelop/Quanta - Git build"
 arch=('i686' 'x86_64')
 url="http://www.kdevelop.org/"
 license=('GPL')
@@ -19,7 +19,7 @@ _gitname="ruby"
 
 build() {
     cd "$srcdir"
-    msg "Connecting to Git server...."
+    msg "Connecting to Git server..."
 
     if [ -d $_gitname ] ; then
         cd $_gitname
@@ -33,7 +33,7 @@ build() {
         git clone $_gitroot $_gitname
     fi
 
-    msg "Git checkout done or server timeout"
+    msg "Git checkout done."
     msg "Starting make..."
 
     # Don't install half of user's home dir
