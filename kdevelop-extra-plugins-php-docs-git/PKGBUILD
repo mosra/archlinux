@@ -1,7 +1,7 @@
 # Contributor: mosra <mosra@centrum.cz>
 
 pkgname=(kdevelop-extra-plugins-php-docs-git)
-pkgver=20110604
+pkgver=20120212
 pkgrel=1
 pkgdesc="PHP documentation plugin for KDevelop/Quanta - Git build"
 arch=('i686' 'x86_64')
@@ -24,14 +24,7 @@ build() {
     msg "Connecting to Git server...."
 
     if [ -d $_gitname ] ; then
-        cd $_gitname
-
-        # Changre remote url to anongit
-        if [ -z "$(git remote -v | grep anongit)" ] ; then
-            git remote set-url origin ${_gitroot}
-        fi
-
-        git pull origin
+        cd $_gitname && git pull origin
         msg "The local files are updated."
     else
         git clone $_gitroot $_gitname

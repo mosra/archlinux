@@ -2,7 +2,7 @@
 # Contributor: mosra <mosra@centrum.cz>
 
 pkgname=kdevplatform-git
-pkgver=20110604
+pkgver=20120212
 pkgrel=1
 pkgdesc="A C/C++ development platform for KDE - Git build"
 arch=('i686' 'x86_64')
@@ -24,11 +24,6 @@ build() {
 
     if [ -d $_gitname ] ; then
         cd $_gitname
-
-        # Change remote url to anongit
-        if [ -z "$(git remote -v | grep anongit)" ] ; then
-            git remote set-url origin ${_gitroot}
-        fi
 
         # Revert patched changes
         git checkout .
