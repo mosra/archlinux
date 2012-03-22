@@ -12,7 +12,7 @@ depends=('kdevplatform-git')
 optdepends=('kdevelop-git')
 makedepends=('cmake' 'automoc4' 'git' 'bison')
 source=('no-tests.patch')
-md5sums=('dc05b31fb4f76af3660469afeec8fc90')
+md5sums=('f5f868565eef6fdca5e213cf771614a0')
 
 _gitroot="git://anongit.kde.org/kdev-ruby"
 _gitname="ruby"
