@@ -1,16 +1,19 @@
 # Mantainer: mosra <mosra@centrum.cz>
 
-pkgname=(kdevelop-extra-plugins-ruby-git)
-pkgver=20120212
+pkgname=(kdevelop-ruby-git)
+pkgver=20120322
 pkgrel=1
 pkgdesc="Ruby language plugins for KDevelop/Quanta - Git build"
 arch=('i686' 'x86_64')
 url="http://www.kdevelop.org/"
 license=('GPL')
-groups=('kde' 'kdevelop-extra-plugins')
+groups=('kde' 'kdevelop-plugins')
 depends=('kdevplatform-git')
 optdepends=('kdevelop-git')
 makedepends=('cmake' 'automoc4' 'git' 'bison')
+provides=('kdevelop-extra-plugins-ruby-git')
+conflicts=('kdevelop-extra-plugins-ruby-git')
+replaces=('kdevelop-extra-plugins-ruby-git')
 source=('no-tests.patch')
 md5sums=('f5f868565eef6fdca5e213cf771614a0')
 

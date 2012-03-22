@@ -1,27 +1,29 @@
+# Contributor: Harley Laue <losinggeneration@gmail.com>
 # Contributor: mosra <mosra@centrum.cz>
 
-pkgname=(kdevelop-extra-plugins-php-docs-git)
-pkgver=20120212
+pkgname=(kdevelop-php-git)
+pkgver=20120322
 pkgrel=1
-pkgdesc="PHP documentation plugin for KDevelop/Quanta - Git build"
+pkgdesc="PHP language plugin for KDevelop/Quanta - Git build"
 arch=('i686' 'x86_64')
 url="http://www.kdevelop.org/"
 license=('GPL')
-groups=('kde' 'kdevelop-extra-plugins')
+groups=('kde' 'kdevelop-plugins')
 depends=('kdevplatform-git')
 optdepends=('kdevelop-git')
-makedepends=('cmake' 'automoc4' 'git')
-provides=('kdevelop-php-docs')
-conflicts=('kdevelop-php-docs')
+makedepends=('cmake' 'automoc4' 'git' 'kdevelop-pg-qt-git')
+provides=('kdevelop-php' 'kdevelop-extra-plugins-php-git')
+conflicts=('kdevelop-php' 'kdevelop-extra-plugins-php-git')
+replaces=('kdevelop-extra-plugins-php-git')
 source=()
 md5sums=()
 
-_gitroot="git://anongit.kde.org/kdev-php-docs"
-_gitname="php-docs"
+_gitroot="git://anongit.kde.org/kdev-php"
+_gitname="php"
 
 build() {
     cd "$srcdir"
-    msg "Connecting to Git server...."
+    msg "Connecting to Git server..."
 
     if [ -d $_gitname ] ; then
         cd $_gitname && git pull origin
