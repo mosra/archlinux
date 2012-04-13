@@ -1,6 +1,6 @@
 # Maintainer: Liganic <liganic-aur@gmx.net>
 pkgname=opencollada-svn
-pkgver=864
+pkgver=868
 pkgrel=1
 pkgdesc="Stream based reader and writer library for COLLADA files"
 arch=(x86_64)
@@ -11,6 +11,8 @@ makedepends=('subversion' 'ruby' 'cmake')
 provides=(opencollada)
 conflicts=(opencollada)
 options=(!libtool !strip)
+source=('memcpy.patch')
+md5sums=('939b1ab8683c5655fb71ea7c37d65734')
 
 _svntrunk=http://opencollada.googlecode.com/svn/trunk/
 _svnmod=opencollada
@@ -20,7 +22,11 @@ build() {
   msg "Connecting to SVN server...."
 
   if [[ -d "$_svnmod/.svn" ]]; then
-    (cd "$_svnmod" && svn up -r "$pkgver")
+    cd "$_svnmod"
+
+    svn revert common/libBuffer/include/CommonBuffer.h
+
+    svn up -r "$pkgver"
   else
     svn co "$_svntrunk" --config-dir ./ -r "$pkgver" "$_svnmod"
   fi
@@ -28,16 +34,12 @@ build() {
   msg "SVN checkout done or server timeout"
   msg "Starting build..."
 
-  _builddir="$srcdir/$_svnmod-build"
+  patch -p0 < "$srcdir/memcpy.patch"
 
-  rm -rf $_builddir
-  cp -r "$srcdir/$_svnmod" $_builddir
-  cd $_builddir
-
-  mkdir cmake
-  cd cmake
-  cmake ../ 
-  cd $_builddir/cmake
+  mkdir -p "$srcdir/build"
+  cd "$srcdir/build"
+  cmake ../$_svnmod \
+    -DCMAKE_INSTALL_PREFIX=/usr
   make
 
 #  cd scripts/
@@ -46,23 +48,8 @@ build() {
 }
 
 package() {
-  _builddir="$srcdir/$_svnmod-build"
-#  sed -i "s/libdir='.*'/libdir=\'\/usr\/lib\'/" $pkgdir/usr/lib/*.la*
-
-# Headers
-  rm -rf `find $_builddir -type d -name .svn`
-  mkdir -p $pkgdir/usr/include/opencollada/
-  cd $_builddir
-  _include_dirs=$(find . -type d -name include -and -not -path '*Externals*' -print)
-  for dir in $_include_dirs;do
-    mkdir -p $pkgdir/usr/include/opencollada/${dir}
-    cp -r ${dir}/* $pkgdir/usr/include/opencollada/${dir}/..
-   done
-
-  rm -rf $pkgdir/usr/include/opencollada/generated*
-
-  cp -r $_builddir/cmake/lib/ $pkgdir/usr/
-  cp -r $_builddir/cmake/bin/ $pkgdir/usr/
+  cd "$srcdir/build"
+  make DESTDIR="$pkgdir" install
 }
 
 # vim:set ts=2 sw=2 et:
