@@ -53,7 +53,6 @@ build() {
         -DWITH_BUILTIN_GLEW=OFF \
         -DWITH_CODEC_FFMPEG=ON \
         -DWITH_PYTHON_INSTALL=OFF \
-        -DPYTHON_VERSION=3.2mu \
         -DWITH_MOD_OCEANSIM=ON \
         $_EXTRAOPTS
   make
