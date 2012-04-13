@@ -25,7 +25,9 @@ _svnmod="blender"
 _CUDA_PKG=`pacman -Qsq cuda-toolkit` || true
 if [ "$_CUDA_PKG" != "" ]; then
     _EXTRAOPTS="-DWITH_CYCLES_CUDA_BINARIES=ON \
-                -DCUDA_TOOLKIT_INCLUDE=/usr/include/cuda"
+                -DCUDA_TOOLKIT_INCLUDE=/usr/include/cuda \
+                -DCUDA_TOOLKIT_ROOT_DIR=/opt/cuda-toolkit \
+                -DCYCLES_CUDA_BINARIES_ARCH=sm_12"
 fi
 
 build() {
@@ -55,6 +57,10 @@ build() {
         -DWITH_PYTHON_INSTALL=OFF \
         -DWITH_MOD_OCEANSIM=ON \
         $_EXTRAOPTS
+
+  # Make CUDA kernel, only one job, so it won't eat up too much RAM
+  make -j1 cycles_kernel_cuda
+
   make
   ##########
   # now compile some plugins
