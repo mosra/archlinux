@@ -11,7 +11,7 @@
 # Contributor: mosra <mosra@centrum.cz>
 
 pkgname=clang-svn
-pkgver=153817
+pkgver=153955
 pkgrel=1
 pkgdesc="Low Level Virtual Machine with Clang from SVN"
 arch=('i686' 'x86_64')
