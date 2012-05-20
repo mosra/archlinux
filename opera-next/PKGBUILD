@@ -1,11 +1,11 @@
-# Maintainer: ruario 
+# Maintainer: ruario
 # Contributor: RobertMe
 # Contributor: BlackEagle
 # Contributor: Skunnyk
 # Contributor: totoloco
 pkgname=opera-next # Set to opera if you want to replace your main/stable build
 _bigrelease=12.00
-_buildver=1413
+_buildver=1417
 _randomizer=family
 pkgver=${_bigrelease}_${_buildver}
 pkgrel=1
@@ -25,9 +25,9 @@ _arch=i386
 source=(http://snapshot.opera.com/unix/${_randomizer}_${_bigrelease}-${_buildver}/opera-next-${_bigrelease}-${_buildver}.${_arch}.linux.tar.xz
         'opera-next')
 
-md5sums=('aed4ef2a9d8fc5aabe002f8644aa3b46'
+md5sums=('15708114675046f0ab70c776adba6dd0'
          'c7347e118164ad2ec9fb860dd0ee3bf4')
-[ "$CARCH" = "x86_64" ] && md5sums=('8a02be32df3e5e4058559db4a89a51e2'
+[ "$CARCH" = "x86_64" ] && md5sums=('1750d7155b29c32adb1e7c360697d0f9'
                                     'c7347e118164ad2ec9fb860dd0ee3bf4')
 
 # Uncomment the following line, if you want your User Agent to include Arch Linux.
