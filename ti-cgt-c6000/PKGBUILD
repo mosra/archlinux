@@ -26,5 +26,9 @@ md5sums=('0245785af8df8e6c843cdf121dbf0646')
 
 build() {
     cd "$srcdir/"
-    ./${_pkgbase} --mode silent --prefix "${pkgdir}/usr/arm-ti-cgt-c600"
+    ./${_pkgbase} --mode silent --prefix "${srcdir}/usr/arm-ti-cgt-c600"
+}
+
+package() {
+    mv "${srcdir}/usr" "${pkgdir}/"
 }
