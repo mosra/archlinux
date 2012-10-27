@@ -8,6 +8,7 @@ arch=('any')
 url="http://www.opengl.org/wiki/Getting_started/XML_Toolchain_and_Man_Pages"
 license=('custom')
 makedepends=('subversion' 'libxslt' 'docbook-xsl' 'w3c-mathml2' 'docbook-mathml')
+conflicts=('opengl-man-pages')
 source=('LICENSE')
 md5sums=('cb856abe5968300057e650096ba25b2f')
 
