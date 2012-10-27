@@ -1,7 +1,7 @@
 # Maintainer: mosra <mosra@centrum.cz>
 
 pkgname=opengl4-man-pages-svn
-pkgver=16945
+pkgver=19312
 pkgrel=1
 pkgdesc="OpenGL 4 Man Pages"
 arch=('any')
@@ -32,7 +32,7 @@ build() {
     export ROOT="${srcdir}/man"
     make
     for file in *.xml; do
-        xsltproc --noout --nonet /usr/share/xml/docbook/xsl-stylesheets-1.76.1/manpages/docbook.xsl ${file}
+        xsltproc --noout --nonet /usr/share/xml/docbook/xsl-stylesheets-*/manpages/docbook.xsl ${file}
     done
 }
 
