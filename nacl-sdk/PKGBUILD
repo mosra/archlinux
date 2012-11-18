@@ -1,0 +1,31 @@
+# Maintainer: mosra <mosra@centrum.cz>
+pkgname=nacl-sdk
+pkgver=22
+pkgrel=1
+pkgdesc="SDK for Google Chrome Native Client"
+arch=('i686' 'x86_64')
+url="https://developers.google.com/native-client/"
+license=('BSD')
+source=(http://storage.googleapis.com/nativeclient-mirror/nacl/nacl_sdk/nacl_sdk.zip)
+md5sums=('a436bcbb44e5b081dbfa20cc9a3ceb25')
+options=(!strip)
+
+build() {
+    cd "$srcdir/nacl_sdk"
+
+    # Use python2
+    sed -i -e 's/python /python2 /g' naclsdk
+
+    ./naclsdk update --force pepper_$pkgver
+}
+
+package() {
+    mkdir -p "$pkgdir/usr/nacl/"
+
+    cd "$srcdir/nacl_sdk/pepper_$pkgver"
+
+    cp -r * "$pkgdir/usr/nacl/"
+
+    cd "$pkgdir/usr/nacl/"
+    chmod -R go=u-w *
+}
