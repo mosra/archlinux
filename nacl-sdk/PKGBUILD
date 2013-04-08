@@ -1,6 +1,6 @@
 # Maintainer: mosra <mosra@centrum.cz>
 pkgname=nacl-sdk
-pkgver=22
+pkgver=25
 pkgrel=1
 pkgdesc="SDK for Google Chrome Native Client"
 arch=('i686' 'x86_64')
