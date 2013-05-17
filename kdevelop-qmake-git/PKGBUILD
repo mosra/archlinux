@@ -1,0 +1,42 @@
+# Maintainer: Andrea Scarpino <andrea@archlinux.org>
+# Contributor: Radu Andries <admiral0@tuxfamily.org>
+
+pkgname=kdevelop-qmake-git
+pkgver=20130112
+pkgrel=1
+pkgdesc="Support for Qt's qmake build system"
+arch=('i686' 'x86_64')
+url="https://projects.kde.org/projects/playground/devtools/plugins/kdev-qmake"
+license=('GPL')
+depends=('kdevelop')
+makedepends=('git' 'cmake' 'automoc4' 'kdevelop-pg-qt')
+
+_gitroot="git://anongit.kde.org/kdev-qmake.git"
+_gitname="kdev-qmake"
+
+build() {
+  msg "Connecting to GIT server...."
+
+  if [ -d $_gitname ] ; then
+    cd $_gitname && git pull origin
+    msg "The local files are updated."
+  else
+    git clone $_gitroot $_gitname
+  fi
+
+  msg "GIT checkout done or server timeout"
+  msg "Starting make..."
+
+  mkdir -p "${srcdir}"/build
+  cd "$srcdir"/build
+  cmake ../$_gitname \
+    -DCMAKE_INSTALL_PREFIX=$(kde4-config --prefix) \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DQT_QMAKE_EXECUTABLE=qmake-qt4
+  make
+}
+
+package() {
+  cd build
+  make DESTDIR="$pkgdir/" install
+} 
