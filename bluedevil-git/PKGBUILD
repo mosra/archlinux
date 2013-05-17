@@ -2,7 +2,7 @@
 # Contributor: mosra <mosra@centrum.cz>
 
 pkgname=bluedevil-git
-pkgver=20120212
+pkgver=20130517
 pkgrel=1
 pkgdesc='KDE bluetooth framework - Git version'
 arch=('i686' 'x86_64')
@@ -17,6 +17,10 @@ md5sums=()
 
 _gitroot="git://anongit.kde.org/bluedevil.git"
 _gitname="bluedevil"
+
+pkgver() {
+    date +%Y%m%d
+}
 
 build(){
     cd "$srcdir"

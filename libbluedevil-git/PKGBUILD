@@ -2,7 +2,7 @@
 # Contributor: mosra <mosra@centrum.cz>
 
 pkgname=libbluedevil-git
-pkgver=20130326
+pkgver=20130517
 pkgrel=1
 pkgdesc='A Qt wrapper for bluez used in the new KDE bluetooth stack - Git build'
 arch=('i686' 'x86_64')
@@ -15,6 +15,10 @@ conflicts=("libbluedevil")
 
 _gitroot="git://anongit.kde.org/libbluedevil.git"
 _gitname="libbluedevil"
+
+pkgver() {
+    date +%Y%m%d
+}
 
 build(){
     cd "$srcdir"
