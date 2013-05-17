@@ -1,6 +1,6 @@
 # Contributor: mosra <mosra@centrum.cz>
 
-pkgname=(kdevelop-php-docs-git)
+pkgname=kdevelop-php-docs-git
 pkgver=20130517
 pkgrel=1
 pkgdesc="PHP documentation plugin for KDevelop/Quanta - Git build"
@@ -11,11 +11,8 @@ groups=('kde' 'kdevelop-plugins')
 depends=('kdevplatform-git')
 optdepends=('kdevelop-git')
 makedepends=('cmake' 'automoc4' 'git')
-provides=('kdevelop-php-docs' 'kdevelop-extra-plugins-php-docs-git')
-conflicts=('kdevelop-php-docs' 'kdevelop-extra-plugins-php-docs-git')
-replaces=('kdevelop-extra-plugins-php-docs-git')
-source=()
-md5sums=()
+provides=('kdevelop-php-docs')
+conflicts=('kdevelop-php-docs')
 
 _gitroot="git://anongit.kde.org/kdev-php-docs"
 _gitname="php-docs"
@@ -26,7 +23,7 @@ pkgver() {
 
 build() {
     cd "$srcdir"
-    msg "Connecting to Git server...."
+    msg "Connecting to Git server..."
 
     if [ -d $_gitname ] ; then
         cd $_gitname && git pull origin
@@ -41,7 +38,7 @@ build() {
     mkdir -p "$srcdir/build"
     cd "$srcdir/build"
 
-    cmake ../${_gitname} \
+    cmake ../$_gitname \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/usr
 
@@ -51,5 +48,5 @@ build() {
 package() {
     cd "$srcdir/build"
 
-    make DESTDIR="${pkgdir}" install
+    make DESTDIR="$pkgdir" install
 }
