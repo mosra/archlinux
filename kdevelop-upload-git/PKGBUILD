@@ -1,6 +1,6 @@
 # Contributor: mosra <mosra@centrum.cz>
 
-pkgname=(kdevelop-upload-git)
+pkgname=kdevelop-upload-git
 pkgver=20130517
 pkgrel=1
 pkgdesc="Upload plugin for KDevelop - Git build"
@@ -14,8 +14,8 @@ makedepends=('cmake' 'automoc4' 'git')
 provides=('kdevelop-upload')
 conflicts=('kdevelop-upload')
 
-_gitroot="git://anongit.kde.org/kdev-php-docs"
-_gitname="php-docs"
+_gitroot="git://anongit.kde.org/kdev-upload"
+_gitname="upload"
 
 pkgver() {
     date +%Y%m%d
@@ -23,7 +23,7 @@ pkgver() {
 
 build() {
     cd "$srcdir"
-    msg "Connecting to Git server...."
+    msg "Connecting to Git server..."
 
     if [ -d $_gitname ] ; then
         cd $_gitname && git pull origin
@@ -38,7 +38,7 @@ build() {
     mkdir -p "$srcdir/build"
     cd "$srcdir/build"
 
-    cmake ../${_gitname} \
+    cmake ../$_gitname \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/usr
 
@@ -48,5 +48,5 @@ build() {
 package() {
     cd "$srcdir/build"
 
-    make DESTDIR="${pkgdir}" install
+    make DESTDIR="$pkgdir" install
 }

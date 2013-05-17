@@ -1,0 +1,13 @@
+diff --git a/kdevvalgrind.desktop b/kdevvalgrind.desktop
+index a9aee7b..eea0e1b 100644
+--- a/kdevvalgrind.desktop
++++ b/kdevvalgrind.desktop
+@@ -76,7 +76,7 @@ GenericName[uk]=Клієнтська програма зневадника
+ GenericName[x-test]=xxDebugger Frontendxx
+ ServiceTypes=KDevelop/Plugin
+ X-KDE-Library=kdevvalgrind
+-X-KDevelop-Version=14
++X-KDevelop-Version=16
+ X-KDE-PluginInfo-Name=kdevvalgrind
+ X-KDE-PluginInfo-Author=Harald Fernengel, Hamish Rodda
+ X-KDE-PluginInfo-License=GPL
