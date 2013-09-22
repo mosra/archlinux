@@ -9,6 +9,7 @@ license=('BSD')
 source=(http://storage.googleapis.com/nativeclient-mirror/nacl/nacl_sdk/nacl_sdk.zip)
 md5sums=('a436bcbb44e5b081dbfa20cc9a3ceb25')
 options=(!strip)
+depends=('lib32-gcc-libs')
 
 build() {
     cd "$srcdir/nacl_sdk"
