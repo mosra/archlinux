@@ -35,7 +35,8 @@ noextract=('blender-addons.git' 'blender-addons-contrib.git'
 _CUDA_PKG=`pacman -Qq cuda 2>/dev/null` || true
 if [ "$_CUDA_PKG" != "" ]; then
     _EXTRAOPTS="-DWITH_CYCLES_CUDA_BINARIES=ON \
-                -DCUDA_TOOLKIT_ROOT_DIR=/opt/cuda"
+                -DCUDA_TOOLKIT_ROOT_DIR=/opt/cuda \
+                -DCYCLES_CUDA_BINARIES_ARCH=sm_30"
 fi
 
 pkgver() {
@@ -68,6 +69,10 @@ build() {
         -DPYTHON_VERSION=3.4m \
         -DWITH_MOD_OCEANSIM=ON \
         $_EXTRAOPTS
+
+  # Make CUDA kernel, only one job, so it won't eat up too much RAM
+  make -j1 cycles_kernel_cuda
+
   make
 }
 
