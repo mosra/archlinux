@@ -62,6 +62,7 @@ build() {
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/usr \
         -DWITH_INSTALL_PORTABLE=OFF \
+        -DWITH_OPENCOLLADA=ON \
         -DWITH_PLAYER=ON \
         -DWITH_FFTW3=ON \
         -DWITH_SYSTEM_GLEW=ON \
