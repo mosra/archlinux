@@ -15,7 +15,7 @@ optdepends=('kdesdk-kompare: difference checking')
 provides=('kdevplatform')
 conflicts=('kdevplatform')
 source=('qdbus.patch')
-md5sums=('b597aa69a996b5132b7307e16fd44f52')
+md5sums=('befb8c443906cef006c6268c24c0b196')
 
 _gitroot="git://anongit.kde.org/kdevplatform"
 _gitname="kdevplatform"
