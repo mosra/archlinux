@@ -1,5 +1,0 @@
-#!/bin/sh
-export OPERA_DIR=${OPERA_DIR:-/usr/share/opera-next}
-export OPERA_PERSONALDIR=${OPERA_PERSONALDIR:-$HOME/.opera-next}
-export VDPAU_NVIDIA_NO_OVERLAY=1
-exec /usr/lib/opera-next/opera-next "$@"
