@@ -1,0 +1,49 @@
+pkgname='emscripten-bullet'
+pkgver=2.87
+pkgrel=1
+pkgdesc="A 3D Collision Detection and Rigid Body Dynamics Library for games and animation (Emscripten wasm version)"
+arch=('any')
+url="http://www.bulletphysics.com/Bullet/"
+license=('custom:zlib')
+makedepends=('cmake' 'emscripten' 'ninja')
+source=("https://github.com/bulletphysics/bullet3/archive/${pkgver}.tar.gz")
+sha512sums=('649e470223295666eda6f7ff59d03097637c2645b5cd951977060ae14b89f56948ce03e437e83c986d26876f187d7ee34e790bc3882d5d66da9af89a4ab81c21')
+options=('!strip' '!buildflags')
+
+build() {
+  [[ ! -d toolchains ]] && git clone --depth=1 git://github.com/mosra/toolchains.git
+
+  cd bullet3-${pkgver}
+
+  [[ -d build ]] && rm -rf build
+  mkdir build && cd build
+
+  cmake .. \
+       -DCMAKE_TOOLCHAIN_FILE="$srcdir/toolchains/generic/Emscripten-wasm.cmake" \
+       -DCMAKE_PREFIX_PATH=/usr/lib/emscripten/system \
+       -DCMAKE_INSTALL_PREFIX=/usr/lib/emscripten/system \
+       -DBUILD_BULLET2_DEMOS=OFF \
+       -DBUILD_BULLET3=OFF \
+       -DBUILD_CLSOCKET=OFF \
+       -DBUILD_CPU_DEMOS=OFF \
+       -DBUILD_ENET=OFF \
+       -DBUILD_EXTRAS=OFF \
+       -DBUILD_OPENGL3_DEMOS=OFF \
+       -DBUILD_PYBULLET=OFF \
+       -DBUILD_UNIT_TESTS=OFF \
+       -DINSTALL_LIBS=ON \
+       -DINSTALL_CMAKE_FILES=OFF \
+       -DUSE_GLUT=OFF \
+       -DUSE_GRAPHICAL_BENCHMARK=OFF \
+       -DCMAKE_BUILD_TYPE=Release \
+       -D_FIND_LIB_PYTHON_PY=$srcdir/bullet3-${pkgver}/build3/cmake/FindLibPython.py \
+       -G Ninja
+
+  ninja
+}
+
+package() {
+  cd bullet3-${pkgver}/build
+
+  DESTDIR=${pkgdir} ninja install
+}
