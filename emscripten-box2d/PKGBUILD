@@ -1,0 +1,39 @@
+pkgname=emscripten-box2d
+pkgver=2.3.1
+pkgrel=1
+pkgdesc="2D rigid body simulation library for games"
+url="http://www.box2d.org/"
+license=('zlib')
+arch=('x86_64')
+#depends=('freeglut')
+makedepends=('cmake' 'emscripten' 'ninja')
+optdepends=()
+source=("https://github.com/erincatto/Box2D/archive/v${pkgver}.tar.gz")
+md5sums=('70e25df706e848dbe611ca5b5c07a4ae')
+
+build() {
+    [[ ! -d toolchains ]] && git clone --depth=1 git://github.com/mosra/toolchains.git
+
+    cd Box2D-${pkgver}/Box2D
+
+    [[ -d build ]] && rm -r build
+    mkdir build && cd build
+
+    cmake .. \
+        -DCMAKE_TOOLCHAIN_FILE="$srcdir/toolchains/generic/Emscripten-wasm.cmake" \
+        -DCMAKE_PREFIX_PATH=/usr/lib/emscripten/system \
+        -DCMAKE_INSTALL_PREFIX=/usr/lib/emscripten/system \
+        -DBOX2D_INSTALL=ON \
+        -DBOX2D_INSTALL_DOC=OFF \
+        -DBOX2D_BUILD_SHARED=OFF \
+        -DBOX2D_BUILD_STATIC=ON \
+        -DBOX2D_BUILD_EXAMPLES=OFF \
+        -G Ninja
+    ninja
+}
+
+package() {
+  cd Box2D-${pkgver}/Box2D/build
+
+  DESTDIR=${pkgdir} ninja install
+}
