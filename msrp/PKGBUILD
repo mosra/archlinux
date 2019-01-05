@@ -1,40 +1,27 @@
 # Contributor: mosra <mosra@centrum.cz>
 
 pkgname=msrp
-pkgver=0.9.4
-pkgrel=2
+pkgver=0.9.5
+pkgrel=1
 pkgdesc="Meta search and replace tool for both filenames and files"
 arch=('i686' 'x86_64')
-url="http://agateau.wordpress.com/2010/03/10/msrp-a-useful-addition-to-your-toolbo/"
-license=("unknown")
-groups=()
-depends=()
-makedepends=()
-optdepends=()
-provides=()
-conflicts=()
-replaces=()
-backup=()
-options=()
-install=
-source=(
-    "http://ftp.de.debian.org/debian/pool/main/m/${pkgname}/${pkgname}_${pkgver}.orig.tar.gz"
-    "${pkgname}-${pkgver}-0001-git-support.diff"
-    "${pkgname}-${pkgver}-0002-bzr-support.diff"
-)
-noextract=()
-md5sums=('cc327c68f89bbf2466b167371fc34213'
-         '9b7cf87f7b05b18cca527b353410b0be'
-         '22c98a07639a8701c571226a42093c7c')
+url="http://agateau.com/2010/msrp-a-useful-addition-to-your-toolbo/"
+license=("BSD")
+source=("http://msrp.github.io/releases/${pkgname}-${pkgver}.tar.bz2")
+md5sums=('a4a03fd3a797b568e8fa649fb02420dd')
 
 build() {
     cd "$srcdir/$pkgname-$pkgver"
 
-    # patch for GIT and Bazaar support
-    patch -p1 < "$srcdir/msrp-0.9.4-0001-git-support.diff"
-    patch -p1 < "$srcdir/msrp-0.9.4-0002-bzr-support.diff"
+    mkdir -p build && cd build
+    cmake .. \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DCMAKE_BUILD_TYPE=Release
+    make -j
+}
 
-    ./configure --prefix=/usr
-    make || return 1
+package() {
+    cd "$srcdir/$pkgname-$pkgver/build"
+
     make DESTDIR="$pkgdir/" install
 }
