@@ -1,0 +1,22 @@
+# Contributor: mosra <mosra@centrum.cz>
+
+pkgname=swiftshader-bin
+pkgver=637178
+pkgrel=1
+pkgdesc="SwiftShader binary, taken from Chrome"
+arch=('i686' 'x86_64')
+url="https://github.com/google/swiftshader"
+license=("Apache-2.0")
+source=("https://www.googleapis.com/download/storage/v1/b/chromium-browser-snapshots/o/Linux_x64%2F${pkgver}%2Fchrome-linux.zip?alt=media")
+md5sums=('2353e0d96677f6955a1a219503e23892')
+
+build() {
+    true
+}
+
+package() {
+    cd "$srcdir/chrome-linux"
+
+    install -m755 -D swiftshader/libEGL.so $pkgdir/opt/swiftshader/libEGL.so
+    install -m755 -D swiftshader/libGLESv2.so $pkgdir/opt/swiftshader/libGLESv2.so
+}
