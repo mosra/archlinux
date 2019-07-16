@@ -22,4 +22,9 @@ package() {
     for i in imgui.h imgui_internal.h imconfig.h imstb_textedit.h imstb_rectpack.h imstb_truetype.h imgui.cpp imgui_widgets.cpp imgui_draw.cpp imgui_demo.cpp; do
         install -m644 $i $pkgdir/opt/imgui/$i
     done
+
+    install -m755 -d $pkgdir/opt/imgui/misc/cpp
+    for i in imgui_stdlib.h imgui_stdlib.cpp; do
+        install -m644 misc/cpp/$i $pkgdir/opt/imgui/misc/cpp/$i
+    done
 }
