@@ -1,7 +1,10 @@
 # Contributor: mosra <mosra@centrum.cz>
 
 pkgname=swiftshader-bin
-pkgver=637178
+# Last known working which doesn't have a (broken) NV_read_stencil, so we don't
+# have to add yet another workaround there. Version 630100 and up already have
+# it.
+pkgver=587878
 pkgrel=1
 pkgdesc="SwiftShader binary, taken from Chrome"
 arch=('i686' 'x86_64')
@@ -17,6 +20,6 @@ build() {
 package() {
     cd "$srcdir/chrome-linux"
 
-    install -m755 -D swiftshader/libEGL.so $pkgdir/opt/swiftshader/libEGL.so
-    install -m755 -D swiftshader/libGLESv2.so $pkgdir/opt/swiftshader/libGLESv2.so
+    install -m755 -D swiftshader/libEGL.so $pkgdir/usr/lib/swiftshader/libEGL.so
+    install -m755 -D swiftshader/libGLESv2.so $pkgdir/usr/lib/swiftshader/libGLESv2.so
 }
