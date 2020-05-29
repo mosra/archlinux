@@ -1,5 +1,5 @@
 pkgname=python-yacs-git
-pkgver=0.1.6.r1.gaabe5bd
+pkgver=0.1.6.r2.g7b06e28
 pkgrel=1
 pkgdesc="YACS -- Yet Another Configuration System"
 url="https://github.com/rbgirshick/yacs"
