@@ -3,7 +3,7 @@
 _pkgname=basis_universal
 pkgname=basis-universal-src
 pkgver=2f43afcc97d0a5dafdb73b4e24e123cf9687a418
-pkgrel=1
+pkgrel=2
 pkgdesc="Basis Universal GPU Texture Codec (sources)"
 arch=('any')
 url="https://github.com/BinomialLLC/basis_universal"
@@ -24,7 +24,7 @@ package() {
     done
 
     install -m755 -d $pkgdir/opt/basis-universal
-    for i in basisu_backend.{cpp,h} basisu_basis_file.{cpp,h} basisu_comp.{cpp,h} basisu_enc.{cpp,h} basisu_etc.{cpp,h} basisu_frontend.{cpp,h} basisu_global_selector_palette_helpers.{cpp,h} basisu_gpu_texture.{cpp,h} basisu_pvrtc1_4.{cpp,h} basisu_resample_filters.cpp basisu_resampler_filters.h  basisu_resampler.{cpp,h} basisu_ssim.{cpp,h} lodepng.{cpp,h}; do
+    for i in basisu_astc_decomp.{cpp,h} basisu_backend.{cpp,h} basisu_basis_file.{cpp,h} basisu_comp.{cpp,h} basisu_enc.{cpp,h} basisu_etc.{cpp,h} basisu_frontend.{cpp,h} basisu_global_selector_palette_helpers.{cpp,h} basisu_gpu_texture.{cpp,h} basisu_pvrtc1_4.{cpp,h} basisu_resample_filters.cpp basisu_resampler_filters.h  basisu_resampler.{cpp,h} basisu_ssim.{cpp,h} lodepng.{cpp,h}; do
         install -m644 $i $pkgdir/opt/basis-universal/$i
     done
 }
