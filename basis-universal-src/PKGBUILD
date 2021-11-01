@@ -2,14 +2,14 @@
 
 _pkgname=basis_universal
 pkgname=basis-universal-src
-pkgver=2f43afcc97d0a5dafdb73b4e24e123cf9687a418
-pkgrel=2
+pkgver=1_15_update2
+pkgrel=1
 pkgdesc="Basis Universal GPU Texture Codec (sources)"
 arch=('any')
 url="https://github.com/BinomialLLC/basis_universal"
 license=("MIT")
-source=("https://github.com/BinomialLLC/${_pkgname}/archive/${pkgver}.tar.gz")
-md5sums=('fde3b32e8927409fd3aa0563dbe57099')
+source=("https://github.com/BinomialLLC/${_pkgname}/archive/v${pkgver}.tar.gz")
+sha1sums=('b9615d48ebfc62a53f333ebf8a582558a058b0e9')
 
 build() {
     true
@@ -19,12 +19,12 @@ package() {
     cd "$srcdir/$_pkgname-$pkgver"
 
     install -m755 -d $pkgdir/opt/basis-universal/transcoder
-    for i in basisu_file_headers.h basisu_global_selector_cb.h basisu_global_selector_palette.h basisu_transcoder_internal.h basisu_transcoder_tables_{astc_0_255,astc,atc_55,atc_56,bc7_m5_alpha,bc7_m5_color,bc7_m6,dxt1_5,dxt1_6,pvrtc2_45,pvrtc2_alpha_33}.inc basisu_transcoder.{cpp,h} basisu.h; do
+    for i in basisu_containers.h basisu_containers_impl.h basisu_file_headers.h basisu_global_selector_cb.h basisu_global_selector_palette.h basisu_transcoder_internal.h basisu_transcoder_tables_{astc_0_255,astc,atc_55,atc_56,bc7_m5_alpha,bc7_m5_color,dxt1_5,dxt1_6,pvrtc2_45,pvrtc2_alpha_33}.inc basisu_transcoder_uastc.h basisu_transcoder.{cpp,h} basisu.h; do
         install -m644 transcoder/$i $pkgdir/opt/basis-universal/transcoder/$i
     done
 
-    install -m755 -d $pkgdir/opt/basis-universal
-    for i in basisu_astc_decomp.{cpp,h} basisu_backend.{cpp,h} basisu_basis_file.{cpp,h} basisu_comp.{cpp,h} basisu_enc.{cpp,h} basisu_etc.{cpp,h} basisu_frontend.{cpp,h} basisu_global_selector_palette_helpers.{cpp,h} basisu_gpu_texture.{cpp,h} basisu_pvrtc1_4.{cpp,h} basisu_resample_filters.cpp basisu_resampler_filters.h  basisu_resampler.{cpp,h} basisu_ssim.{cpp,h} lodepng.{cpp,h}; do
-        install -m644 $i $pkgdir/opt/basis-universal/$i
+    install -m755 -d $pkgdir/opt/basis-universal/encoder
+    for i in apg_bmp.{c,h} basisu_astc_decomp.{cpp,h} basisu_backend.{cpp,h} basisu_basis_file.{cpp,h} basisu_bc7enc.{cpp,h} basisu_comp.{cpp,h} basisu_enc.{cpp,h} basisu_etc.{cpp,h} basisu_frontend.{cpp,h} basisu_global_selector_palette_helpers.{cpp,h} basisu_gpu_texture.{cpp,h} basisu_kernels_sse.cpp basisu_miniz.h basisu_pvrtc1_4.{cpp,h} basisu_resample_filters.cpp basisu_resampler_filters.h basisu_resampler.{cpp,h} basisu_ssim.{cpp,h} basisu_uastc_enc.{cpp,h} jpgd.{cpp,h} lodepng.{cpp,h}; do
+        install -m644 encoder/$i $pkgdir/opt/basis-universal/encoder/$i
     done
 }
