@@ -1,31 +1,27 @@
-This repository contains my ArchLinux packages.
+This repository contains ArchLinux packages maintained by me, but too obscure
+to be in AUR.
 
-Packages maintained by me and available in AUR
-==============================================
+Dependencies for Magnum development PKGBUILDs
+=============================================
 
- * blender-freestyle-svn
- * bluedevil-git
- * kate-filetree-plugin
- * kdevelop-extra-plugins-php-docs-git
- * kdevelop-extra-plugins-php-git
- * kdevelop-git
- * kdevelop-pg-qt-git
- * kdevplatform-git
- * libbluedevil-git
- * mingw32-qjson
- * msrp
- * quanta-git
- * speedcontrol
- * svn2git-git
- * svneverever-git
+Needed by `package/archlinux/PKGBUILD*` files in
+[magnum-plugins](https://github.com/mosra/magnum-plugins/tree/master/package/archlinux),
+[magnum-integration](https://github.com/mosra/magnum-integration/tree/master/package/archlinux) and
+[magnum-examples](https://github.com/mosra/magnum-examples/tree/master/package/archlinux).
+
+ * emscripten-box2d
+ * emscripten-bullet
+ * emscripten-faad2
+ * basis-universal-src
+ * imgui-src
+ * swiftshader-bin
 
 SDK for good ol' GP2X
 =====================
 
-(Nearly all) these packages depend on kernel sources and libraries for GP2X,
-which are nearly 65 MB in size and which are currently nearly unfindable on the
-internet and the only one mirror I found is slow as hell. That's the reason
-they aren't available in AUR (also because they are ugly and "just working").
+GP2X is a [Linux-based game console from 2005](https://en.wikipedia.org/wiki/GP2X).
+Now mostly for archival purposes, these directly contain kernel sources and
+libraries for GP2X, which are no longer easy to find elsewhere on the internet.
 
  * gp2xsdk-binutils
  * gp2xsdk-gcc
@@ -33,7 +29,14 @@ they aren't available in AUR (also because they are ugly and "just working").
  * gp2xsdk-glibc
  * gp2xsdk-libs
 
-Temporary packages
-==================
+Other packages, maintained directly in AUR
+==========================================
 
-Everything other are temporary, ugly or not working / unfinished packages.
+ * [meshoptimizer](https://aur.archlinux.org/packages/meshoptimizer)
+ * [corrade-git](https://aur.archlinux.org/packages/corrade-git) (also as [corrade](https://archlinux.org/packages/community/x86_64/corrade/) in the `[community]` repository)
+ * [magnum-git](https://aur.archlinux.org/packages/magnum-git) (also as [magnum](https://archlinux.org/packages/community/x86_64/magnum/) in the `[community]` repository)
+ * [magnum-plugins-git](https://aur.archlinux.org/packages/magnum-plugins-git) (also as [magnum-plugins](https://archlinux.org/packages/community/x86_64/magnum-plugins/) in the `[community]` repository)
+ * [magnum-integration-git](https://aur.archlinux.org/packages/magnum-integration-git)
+ * [magnum-extras-git](https://aur.archlinux.org/packages/magnum-extras-git)
+ * [magnum-examples-git](https://aur.archlinux.org/packages/magnum-examples-git)
+ * [magnum-bindings-git](https://aur.archlinux.org/packages/magnum-bindings-git)
