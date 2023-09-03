@@ -3,7 +3,7 @@
 _pkgname=basis_universal
 pkgname=basis-universal-src
 pkgver=1_15_update2
-pkgrel=2
+pkgrel=3
 pkgdesc="Basis Universal GPU Texture Codec (sources)"
 arch=('any')
 url="https://github.com/BinomialLLC/basis_universal"
@@ -26,10 +26,5 @@ package() {
     install -m755 -d $pkgdir/opt/basis-universal/encoder
     for i in apg_bmp.{c,h} basisu_astc_decomp.{cpp,h} basisu_backend.{cpp,h} basisu_basis_file.{cpp,h} basisu_bc7enc.{cpp,h} basisu_comp.{cpp,h} basisu_enc.{cpp,h} basisu_etc.{cpp,h} basisu_frontend.{cpp,h} basisu_global_selector_palette_helpers.{cpp,h} basisu_gpu_texture.{cpp,h} basisu_kernels_sse.cpp basisu_miniz.h basisu_pvrtc1_4.{cpp,h} basisu_resample_filters.cpp basisu_resampler_filters.h basisu_resampler.{cpp,h} basisu_ssim.{cpp,h} basisu_uastc_enc.{cpp,h} jpgd.{cpp,h} lodepng.{cpp,h}; do
         install -m644 encoder/$i $pkgdir/opt/basis-universal/encoder/$i
-    done
-
-    install -m755 -d $pkgdir/opt/basis-universal/zstd
-    for i in zstd.{c,h} zstddeclib.c; do
-        install -m644 zstd/$i $pkgdir/opt/basis-universal/zstd/$i
     done
 }
