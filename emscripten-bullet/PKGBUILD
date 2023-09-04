@@ -11,7 +11,7 @@ sha512sums=('649e470223295666eda6f7ff59d03097637c2645b5cd951977060ae14b89f56948c
 options=('!strip' '!buildflags')
 
 build() {
-  [[ ! -d toolchains ]] && git clone --depth=1 git://github.com/mosra/toolchains.git
+  [[ ! -d toolchains ]] && git clone --depth=1 https://github.com/mosra/toolchains.git
 
   cd bullet3-${pkgver}
 
