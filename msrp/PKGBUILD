@@ -17,11 +17,11 @@ build() {
     cmake .. \
         -DCMAKE_INSTALL_PREFIX=/usr \
         -DCMAKE_BUILD_TYPE=Release
-    make -j
+    cmake --build . -j
 }
 
 package() {
     cd "$srcdir/$pkgname-$pkgver/build"
 
-    make DESTDIR="$pkgdir/" install
+    DESTDIR="$pkgdir/" cmake --build . --target install
 }
