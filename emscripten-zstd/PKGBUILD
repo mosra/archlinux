@@ -1,0 +1,42 @@
+_pkgname=zstd
+pkgname=emscripten-zstd
+pkgver=1.5.5
+pkgrel=1
+pkgdesc='Zstandard - Fast real-time compression algorithm'
+arch=('x86_64')
+url='https://facebook.github.io/zstd/'
+license=('GPL')
+depends=('emscripten')
+makedepends=('cmake' 'ninja')
+options=('!makeflags' '!buildflags' 'staticlibs')
+source=(https://github.com/facebook/zstd/releases/download/v${pkgver}/zstd-${pkgver}.tar.zst)
+sha256sums=('ce264bca60eb2f0e99e4508cffd0d4d19dd362e84244d7fc941e79fa69ccf673')
+
+build() {
+  [[ ! -d toolchains ]] && git clone --depth=1 https://github.com/mosra/toolchains.git
+
+  cd ${_pkgname}-${pkgver}
+
+  cmake -S build/cmake -B build_ \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_TOOLCHAIN_FILE="$srcdir/toolchains/generic/Emscripten-wasm.cmake" \
+    -DCMAKE_INSTALL_PREFIX=/usr/lib/emscripten/system \
+    -DZSTD_BUILD_PROGRAMS=OFF \
+    -DZSTD_BUILD_SHARED=OFF \
+    -DZSTD_BUILD_STATIC=ON \
+    -DZSTD_MULTITHREAD_SUPPORT=OFF \
+    -G Ninja
+  ninja -C build_
+}
+
+package() {
+  cd ${_pkgname}-${pkgver}
+  DESTDIR=${pkgdir} ninja -C build_ install/strip
+
+  # Move the CMake config files from lib/ to share/ so CMake doesn't copy them
+  # to the cache, which would then cause the *.bc files, which aren't copied,
+  # to be searched in the cache too
+  cd ${pkgdir}/usr/lib/emscripten/system
+  mkdir share
+  mv lib/cmake share/cmake
+}
