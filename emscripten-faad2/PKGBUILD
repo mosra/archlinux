@@ -8,7 +8,7 @@ pkgdesc="ISO AAC audio decoder (Emscripten WASM build)"
 arch=('x86_64')
 url="http://faac.sourceforge.net/"
 license=('GPL')
-depends=('glibc' 'emscripten' 'ninja')
+depends=('emscripten')
 options=('!makeflags' 'staticlibs')
 source=(https://downloads.sourceforge.net/sourceforge/faac/${_pkgname}-${pkgver}.tar.gz)
 sha256sums=('985c3fadb9789d2815e50f4ff714511c79c2710ac27a4aaaf5c0c2662141426d')
@@ -17,7 +17,7 @@ build() {
   cd ${_pkgname}-${pkgver}
   export CFLAGS='-s WASM=1 -DNDEBUG -O3'
   export CXXFLAGS='-s WASM=1 -DNDEBUG -O3'
-  export LDFLAGS='-O3 --llvm-lto 1'
+  export LDFLAGS='-O3 -flto'
   emconfigure ./configure --prefix=/usr/lib/emscripten/system --enable-shared=no
   make
 }
@@ -27,7 +27,7 @@ package() {
   emmake make DESTDIR="${pkgdir}" install
 
   rm -r ${pkgdir}/usr/lib/emscripten/system/bin
-  rm ${pkgdir}/usr/lib/emscripten/system/lib/*.so*
+  rm ${pkgdir}/usr/lib/emscripten/system/lib/*.la
   rm -r ${pkgdir}/usr/lib/emscripten/system/share
 
   mv ${pkgdir}/usr/lib/emscripten/system/lib/{libfaad.a,faad.bc}
