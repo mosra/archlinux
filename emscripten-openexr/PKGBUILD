@@ -9,12 +9,29 @@ license=(BSD)
 depends=('emscripten')
 makedepends=('cmake' 'ninja')
 options=('!makeflags' '!buildflags' 'staticlibs')
-source=(https://github.com/AcademySoftwareFoundation/openexr/archive/v$pkgver/$_pkgname-$pkgver.tar.gz)
-sha256sums=('b1b200606640547fceff0d3ebe01ac05c4a7ae2a131be7e9b3e5b9f491ef35b3')
+source=(
+  https://github.com/AcademySoftwareFoundation/openexr/archive/v$pkgver/$_pkgname-$pkgver.tar.gz
+  dwaLookups.h
+  b44ExpLogTable.h
+)
+sha256sums=(
+  'b1b200606640547fceff0d3ebe01ac05c4a7ae2a131be7e9b3e5b9f491ef35b3'
+  '4c41f6b833465895a06facc20cf5e210bbba774e386043f88f2f2afcabb904c8'
+  '763311bc6332ff022b2439c0dce137c06fe577cb8c3cd7237a4092fa7b24fd2d'
+)
+
+prepare() {
+  [[ -d toolchains ]] || git clone --depth=1 https://github.com/mosra/toolchains.git
+
+  # Saves 1.75 MB in the binary, together with various DCE performed by
+  # Emscripten this reduces the code size from 2.5 MB to just half a megabyte.
+  # Comment this out if you want to have working and non-crashy OpenEXR DWA and
+  # B44 export as well.
+  cp $srcdir/dwaLookups.h $_pkgname-$pkgver/src/lib/OpenEXR/dwaLookups.h
+  cp $srcdir/b44ExpLogTable.h $_pkgname-$pkgver/src/lib/OpenEXR/b44ExpLogTable.h
+}
 
 build() {
-  [[ ! -d toolchains ]] && git clone --depth=1 https://github.com/mosra/toolchains.git
-
   cmake -B build -S $_pkgname-$pkgver \
     -DCMAKE_TOOLCHAIN_FILE="$srcdir/toolchains/generic/Emscripten-wasm.cmake" \
     -DCMAKE_PREFIX_PATH=/usr/lib/emscripten/system \
@@ -32,6 +49,8 @@ build() {
     -DOPENEXR_FORCE_INTERNAL_IMATH=ON \
     -DOPENEXR_FORCE_INTERNAL_DEFLATE=ON \
     -DIMATH_INSTALL_PKG_CONFIG=OFF \
+    `# The table is literally all half-floats, so 256 kB of data` \
+    -DIMATH_HALF_USE_LOOKUP_TABLE=OFF \
     -G Ninja
   ninja -C build
 }
