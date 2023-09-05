@@ -1,0 +1,48 @@
+_pkgname=openexr
+pkgname=emscripten-openexr
+pkgver=3.2.0
+pkgrel=1
+pkgdesc='A high dynamic-range image file format library (Emscripten wasm version)'
+url='https://www.openexr.com/'
+arch=(x86_64)
+license=(BSD)
+depends=('emscripten')
+makedepends=('cmake' 'ninja')
+options=('!makeflags' '!buildflags' 'staticlibs')
+source=(https://github.com/AcademySoftwareFoundation/openexr/archive/v$pkgver/$_pkgname-$pkgver.tar.gz)
+sha256sums=('b1b200606640547fceff0d3ebe01ac05c4a7ae2a131be7e9b3e5b9f491ef35b3')
+
+build() {
+  [[ ! -d toolchains ]] && git clone --depth=1 https://github.com/mosra/toolchains.git
+
+  cmake -B build -S $_pkgname-$pkgver \
+    -DCMAKE_TOOLCHAIN_FILE="$srcdir/toolchains/generic/Emscripten-wasm.cmake" \
+    -DCMAKE_PREFIX_PATH=/usr/lib/emscripten/system \
+    -DCMAKE_INSTALL_PREFIX=/usr/lib/emscripten/system \
+    -DCMAKE_CXX_FLAGS="-s DISABLE_EXCEPTION_CATCHING=0" \
+    -DCMAKE_EXE_LINKER_FLAGS="-s DISABLE_EXCEPTION_CATCHING=0" \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DOPENEXR_BUILD_TOOLS=OFF \
+    -DOPENEXR_ENABLE_THREADING=OFF \
+    -DBUILD_TESTING=OFF \
+    -DBUILD_SHARED_LIBS=OFF \
+    -DOPENEXR_INSTALL_EXAMPLES=OFF \
+    -DOPENEXR_INSTALL_TOOLS=OFF \
+    -DOPENEXR_INSTALL_PKG_CONFIG=OFF \
+    -DOPENEXR_FORCE_INTERNAL_IMATH=ON \
+    -DOPENEXR_FORCE_INTERNAL_DEFLATE=ON \
+    -DIMATH_INSTALL_PKG_CONFIG=OFF \
+    -G Ninja
+  ninja -C build
+}
+
+package() {
+  DESTDIR="$pkgdir" ninja -C build install
+
+  # Move the CMake config files from lib/ to share/ so CMake doesn't copy them
+  # to the cache, which would then cause the *.bc files, which aren't copied,
+  # to be searched in the cache too
+  cd ${pkgdir}/usr/lib/emscripten/system
+  mkdir share
+  mv lib/cmake share/cmake
+}
