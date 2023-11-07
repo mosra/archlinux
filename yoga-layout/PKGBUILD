@@ -1,0 +1,31 @@
+# Author: mosra <mosra@centrum.cz>
+pkgname=yoga-layout
+pkgver=2.0.1
+pkgrel=1
+pkgdesc='Cross-platform layout engine which implements Flexbox'
+arch=(x86_64)
+url='https://github.com/facebook/yoga'
+license=(MIT)
+makedepends=(cmake ninja)
+source=("https://github.com/facebook/yoga/archive/refs/tags/v$pkgver.tar.gz")
+sha256sums=('4c80663b557027cdaa6a836cc087d735bb149b8ff27cbe8442fc5e09cec5ed92')
+
+prepare() {
+    # Exclude tests (which cause the whole of Google test installed, ffs!!) by
+    # making the CMakeLists empty
+    echo > $srcdir/yoga-$pkgver/tests/CMakeLists.txt
+}
+
+build() {
+    mkdir -p build && cd build
+    cmake "$srcdir/yoga-$pkgver" \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -G Ninja
+    ninja
+}
+
+package() {
+    cd build
+    DESTDIR="$pkgdir" ninja install/strip
+}
