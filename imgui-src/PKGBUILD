@@ -2,14 +2,14 @@
 
 _pkgname=imgui
 pkgname=imgui-src
-pkgver=1.77
+pkgver=1.88
 pkgrel=1
 pkgdesc="Bloat-free Immediate Mode Graphical User interface for C++ (sources)"
 arch=('any')
 url="https://github.com/ocornut/imgui"
 license=("MIT")
 source=("https://github.com/ocornut/${_pkgname}/archive/v${pkgver}.tar.gz")
-md5sums=('d42af3bff3a6489fd8eb5ceb49e12a63')
+md5sums=('c1ccd7123bc6879bfd4760e731d1e0d0')
 
 build() {
     true
@@ -19,7 +19,7 @@ package() {
     cd "$srcdir/$_pkgname-$pkgver"
 
     install -m755 -d $pkgdir/opt/imgui
-    for i in imgui.h imgui_internal.h imconfig.h imstb_textedit.h imstb_rectpack.h imstb_truetype.h imgui.cpp imgui_widgets.cpp imgui_draw.cpp imgui_demo.cpp; do
+    for i in imgui.h imgui_internal.h imconfig.h imstb_textedit.h imstb_rectpack.h imstb_truetype.h imgui.cpp imgui_widgets.cpp imgui_draw.cpp imgui_demo.cpp imgui_tables.cpp; do
         install -m644 $i $pkgdir/opt/imgui/$i
     done
 
