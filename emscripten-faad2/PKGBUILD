@@ -3,7 +3,7 @@
 _pkgname=faad2
 pkgname=emscripten-faad2
 pkgver=2.8.8
-pkgrel=1
+pkgrel=2
 pkgdesc="ISO AAC audio decoder (Emscripten WASM build)"
 arch=('x86_64')
 url="http://faac.sourceforge.net/"
@@ -29,7 +29,4 @@ package() {
   rm -r ${pkgdir}/usr/lib/emscripten/system/bin
   rm ${pkgdir}/usr/lib/emscripten/system/lib/*.la
   rm -r ${pkgdir}/usr/lib/emscripten/system/share
-
-  mv ${pkgdir}/usr/lib/emscripten/system/lib/{libfaad.a,faad.bc}
-  mv ${pkgdir}/usr/lib/emscripten/system/lib/{libfaad_drm.a,faad_drm.bc}
 }
