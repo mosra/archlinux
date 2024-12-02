@@ -9,13 +9,13 @@ arch=('x86_64')
 makedepends=('cmake' 'emscripten' 'ninja')
 options=('!strip' '!buildflags')
 optdepends=()
-source=("https://github.com/erincatto/Box2D/archive/v${pkgver}.tar.gz")
-md5sums=('70e25df706e848dbe611ca5b5c07a4ae')
+source=("https://github.com/erincatto/box2d/archive/v${pkgver}.tar.gz")
+md5sums=('20f1e128f99ddb1634c2ba55a959feb2')
 
 build() {
-    [[ ! -d toolchains ]] && git clone --depth=1 git://github.com/mosra/toolchains.git
+    [[ ! -d toolchains ]] && git clone --depth=1 https://github.com/mosra/toolchains.git
 
-    cd Box2D-${pkgver}/Box2D
+    cd box2d-${pkgver}/Box2D
 
     [[ -d build ]] && rm -r build
     mkdir build && cd build
@@ -34,7 +34,7 @@ build() {
 }
 
 package() {
-  cd Box2D-${pkgver}/Box2D/build
+  cd box2d-${pkgver}/Box2D/build
 
   DESTDIR=${pkgdir} ninja install
 }
